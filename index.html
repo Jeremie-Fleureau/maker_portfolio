@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Electronics Projects Hub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+	/* Hide scrollbar for Firefox */
+	html {
+    		scrollbar-width: none;
+	}
+
+/* Hide scrollbar for Chrome, Safari and Edge */
+	html::-webkit-scrollbar {
+   		display: none;
+	}
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0f0f0f;
+            color: #e8e8e8;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 80px 40px;
+        }
+
+        header {
+            margin-bottom: 80px;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 300;
+            color: #ffffff;
+            margin-bottom: 20px;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #999;
+            font-weight: 400;
+            max-width: 600px;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2px;
+            background: #1a1a1a;
+        }
+
+        .project-card {
+            background: #0f0f0f;
+            padding: 50px 40px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid #1a1a1a;
+            position: relative;
+        }
+
+        .project-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 0;
+            background: #fff;
+            transition: height 0.3s ease;
+        }
+
+        .project-card:hover {
+            background: #141414;
+            border-color: #2a2a2a;
+        }
+
+        .project-card:hover::before {
+            height: 100%;
+        }
+
+        .project-number {
+            font-size: 0.85rem;
+            color: #666;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            margin-bottom: 20px;
+        }
+
+        .project-title {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: #ffffff;
+            font-weight: 400;
+            letter-spacing: -0.01em;
+        }
+
+        .project-description {
+            color: #888;
+            line-height: 1.7;
+            font-size: 0.95rem;
+        }
+
+        /* Updated Tag Styles */
+        .tag-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid #1a1a1a;
+        }
+
+        .tag {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            border: 1px solid transparent;
+        }
+
+        .tag-hw { color: #f59e0b; border-color: rgba(245, 158, 11, 0.3); background: rgba(245, 158, 11, 0.05); } /* Hardware/Amber */
+        .tag-sw { color: #3b82f6; border-color: rgba(59, 130, 246, 0.3); background: rgba(59, 130, 246, 0.05); } /* Systems/Blue */
+        .tag-pwr { color: #ef4444; border-color: rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.05); } /* Power/Red */
+        .tag-rf { color: #10b981; border-color: rgba(16, 185, 129, 0.3); background: rgba(16, 185, 129, 0.05); } /* RF/Green */
+
+        .cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #fff;
+            font-size: 0.9rem;
+            margin-top: 20px;
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .project-card:hover .cta {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .cta::after {
+            content: '→';
+            transition: transform 0.3s ease;
+        }
+
+        .project-card:hover .cta::after {
+            transform: translateX(5px);
+        }
+
+        @media (max-width: 1024px) {
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .container {
+                padding: 60px 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Electronics Projects</h1>
+            <p class="subtitle">Comprehensive build guides for advanced electronics enthusiasts</p>
+        </header>
+
+        <div class="projects-grid">
+            <div class="project-card" onclick="goToProject('tesla-coil')">
+                <div class="project-number">PROJECT 01</div>
+                <h2 class="project-title">Mini Tesla Coil</h2>
+                <p class="project-description">Build a compact Tesla coil that generates high-voltage electrical arcs and demonstrates fundamental principles of electromagnetic resonance and wireless energy transmission.</p>
+                <div class="tag-container">
+                    <span class="tag tag-pwr">high-voltage</span>
+                    <span class="tag tag-rf">analog</span>
+                    <span class="tag tag-hw">pcb-design</span>
+                </div>
+                <div class="cta">View Project</div>
+            </div>
+
+            <div class="project-card" onclick="goToProject('drsstc')">
+                <div class="project-number">PROJECT 02</div>
+                <h2 class="project-title">DRSSTC</h2>
+                <p class="project-description">Construct a Dual Resonant Solid State Tesla Coil with precise frequency control, capable of producing musical tones through modulated electrical arcs using advanced power electronics.</p>
+                <div class="tag-container">
+                    <span class="tag tag-pwr">igbt-power</span>
+                    <span class="tag tag-sw">stm32</span>
+                    <span class="tag tag-rf">dsp</span>
+                </div>
+                <div class="cta">View Project</div>
+            </div>
+
+            <div class="project-card" onclick="goToProject('induction-heating')">
+                <div class="project-number">PROJECT 03</div>
+                <h2 class="project-title">Induction Heating</h2>
+                <p class="project-description">Design and build an induction heater using high-frequency electromagnetic fields to rapidly heat ferromagnetic materials for forging, melting, and thermal demonstrations.</p>
+                <div class="tag-container">
+                    <span class="tag tag-pwr">induction</span>
+                    <span class="tag tag-hw">mosfet</span>
+                    <span class="tag tag-pwr">thermal</span>
+                </div>
+                <div class="cta">View Project</div>
+            </div>
+
+            <div class="project-card" onclick="goToProject('wireless-power')">
+                <div class="project-number">PROJECT 04</div>
+                <h2 class="project-title">Wireless Power Transfer</h2>
+                <p class="project-description">Develop a resonant inductive coupling system for efficient wireless power transmission over short distances, demonstrating magnetic resonance coupling principles.</p>
+                <div class="tag-container">
+                    <span class="tag tag-rf">resonant-coupling</span>
+                    <span class="tag tag-hw">coil-winding</span>
+                </div>
+                <div class="cta">View Project</div>
+            </div>
+
+            <div class="project-card" onclick="goToProject('autonomous-car')">
+                <div class="project-number">PROJECT 05</div>
+                <h2 class="project-title">Autonomous RC Car</h2>
+                <p class="project-description">Program and assemble an RC vehicle with integrated sensors and microcontrollers for autonomous navigation using real-time obstacle detection and path planning algorithms.</p>
+                <div class="tag-container">
+                    <span class="tag tag-sw">c++</span>
+                    <span class="tag tag-sw">pid-control</span>
+                    <span class="tag tag-hw">lidar</span>
+                </div>
+                <div class="cta">View Project</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function goToProject(projectId) {
+            window.location.href = `project.html?id=${projectId}`;
+        }
+    </script>
+</body>
+</html>
