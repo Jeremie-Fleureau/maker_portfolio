@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSTC Audio Moyenne Puissance</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Masquage de la barre de défilement pour Firefox */
+        html {
+            scrollbar-width: none;
+        }
+
+        /* Masquage de la barre de défilement pour Chrome, Safari et Edge */
+        html::-webkit-scrollbar {
+            display: none;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0f0f0f;
+            color: #d4d4d4;
+            line-height: 1.8;
+        }
+
+        /* --- Système de Tags --- */
+        .tag-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .tag {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            border: 1px solid transparent;
+        }
+
+        .tag-hw { color: #f59e0b; border-color: rgba(245, 158, 11, 0.3); background: rgba(245, 158, 11, 0.05); }
+        .tag-sw { color: #3b82f6; border-color: rgba(59, 130, 246, 0.3); background: rgba(59, 130, 246, 0.05); }
+        .tag-pwr { color: #ef4444; border-color: rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.05); }
+        .tag-rf { color: #10b981; border-color: rgba(16, 185, 129, 0.3); background: rgba(16, 185, 129, 0.05); }
+        /* ----------------------- */
+
+        .navbar {
+            background: #0f0f0f;
+            padding: 30px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .back-button {
+            color: #888;
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: color 0.3s ease;
+        }
+
+        .back-button:hover {
+            color: #fff;
+        }
+
+        /* Sélecteur de langue */
+        .lang-switch {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #141414;
+            border: 1px solid #222;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+        }
+
+        .lang-btn {
+            color: #666;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .lang-btn:hover {
+            color: #bbb;
+        }
+
+        .lang-btn.active {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .lang-divider {
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 80px 40px;
+            display: flex;
+            gap: 60px;
+        }
+
+        .sidebar {
+            width: 280px;
+            position: sticky;
+            top: 120px;
+            height: fit-content;
+            flex-shrink: 0;
+        }
+
+        .sidebar-nav {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 8px;
+        }
+
+        .sidebar-nav a {
+            display: block;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            padding: 8px 0;
+            transition: color 0.3s ease;
+            border-left: 2px solid transparent;
+            padding-left: 15px;
+        }
+
+        .sidebar-nav a:hover {
+            color: #fff;
+            border-left-color: #fff;
+        }
+
+        .sidebar-nav a.active {
+            color: #fff;
+            border-left-color: #fff;
+        }
+
+        .main-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .project-header {
+            margin-bottom: 80px;
+            border-bottom: 1px solid #1a1a1a;
+            padding-bottom: 60px;
+        }
+
+        .project-number {
+            font-size: 0.85rem;
+            color: #666;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 300;
+            color: #ffffff;
+            margin-bottom: 30px;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }
+
+        .lead {
+            font-size: 1.2rem;
+            color: #888;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+
+        .project-meta {
+            display: flex;
+            gap: 40px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .meta-label {
+            color: #888;
+            margin-bottom: 5px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .meta-value {
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        .section {
+            margin-bottom: 80px;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            font-weight: 400;
+            color: #ffffff;
+            margin-bottom: 30px;
+            letter-spacing: -0.01em;
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            font-weight: 400;
+            color: #fff;
+            margin-top: 40px;
+            margin-bottom: 20px;
+        }
+
+        p {
+            color: #888;
+            margin-bottom: 20px;
+        }
+
+        .warning-box {
+            background: #1a1111;
+            border-left: 3px solid #ef4444;
+            padding: 30px;
+            margin: 40px 0;
+        }
+
+        .warning-box h4 {
+            color: #ef4444;
+            margin-bottom: 15px;
+            font-size: 1rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .warning-box p {
+            color: #aaa;
+        }
+
+        .parts-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+        }
+
+        .parts-table th {
+            text-align: left;
+            padding: 15px 20px;
+            background: #1a1a1a;
+            color: #888;
+            font-weight: 500;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .parts-table td {
+            padding: 20px;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        .parts-table tr:hover {
+            background: #141414;
+        }
+
+        .part-name {
+            color: #fff;
+            font-weight: 400;
+            margin-bottom: 5px;
+        }
+
+        .part-specs {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .steps-list {
+            counter-reset: step;
+            list-style: none;
+        }
+
+        .steps-list li {
+            counter-increment: step;
+            margin-bottom: 50px;
+            position: relative;
+            padding-left: 80px;
+        }
+
+        .steps-list li::before {
+            content: counter(step, decimal-leading-zero);
+            position: absolute;
+            left: 0;
+            top: 0;
+            font-size: 1rem;
+            color: #666;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+        }
+
+        .step-title {
+            font-size: 1.2rem;
+            color: #fff;
+            margin-bottom: 15px;
+            font-weight: 400;
+        }
+
+        .step-content {
+            color: #888;
+            line-height: 1.8;
+        }
+
+        .tip {
+            background: #141414;
+            border-left: 3px solid #444;
+            padding: 20px 25px;
+            margin: 20px 0;
+            font-size: 0.95rem;
+        }
+
+        .tip-label {
+            color: #888;
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .resources-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2px;
+            background: #1a1a1a;
+            margin-top: 30px;
+        }
+
+        .resource-item {
+            background: #0f0f0f;
+            padding: 30px 25px;
+            transition: background 0.3s ease;
+        }
+
+        .resource-item:hover {
+            background: #141414;
+        }
+
+        .resource-item h4 {
+            color: #fff;
+            font-size: 1rem;
+            margin-bottom: 8px;
+            font-weight: 400;
+        }
+
+        .resource-item p {
+            color: #666;
+            font-size: 0.85rem;
+        }
+
+        /* --- Galerie d'images et figures --- */
+        .project-figure {
+            margin: 35px auto;
+        }
+
+        .project-img {
+            border-radius: 4px;
+            border: 1px solid #1a1a1a;
+            display: block;
+            object-fit: contain;
+        }
+
+        .hero-figure {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px auto 45px auto;
+        }
+
+        .hero-img {
+            max-width: 420px;
+            width: 100%;
+            max-height: 854px;
+        }
+
+        .img-compact {
+            max-width: 560px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .image-caption {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 10px;
+            text-align: center;
+            font-style: italic;
+        }
+
+        .image-pair-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .image-pair-grid .project-img {
+            width: 100%;
+            height: auto;
+        }
+
+        .grid-compact {
+            max-width: 650px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                position: static;
+                width: 100%;
+                border-bottom: 1px solid #1a1a1a;
+                padding-bottom: 30px;
+                margin-bottom: 40px;
+            }
+            
+            .sidebar-nav {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+            
+            .sidebar-nav a {
+                border-left: none;
+                border-bottom: 2px solid transparent;
+                padding-left: 0;
+                padding-bottom: 5px;
+            }
+            
+            .sidebar-nav a:hover,
+            .sidebar-nav a.active {
+                border-left-color: transparent;
+                border-bottom-color: #fff;
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            .container { padding: 60px 30px; }
+            .project-meta { flex-direction: column; gap: 20px; }
+            .steps-list li { padding-left: 60px; }
+            .image-pair-grid { grid-template-columns: 1fr; }
+            .hero-img, .img-compact, .grid-compact { max-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html?lang=fr" class="back-button">← Retour aux Projets</a>
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <div style="color: #666; font-size: 0.9rem;">PROJET 01</div>
+                <div class="lang-switch">
+                    <a href="project01eng.html" class="lang-btn">EN</a>
+                    <span class="lang-divider">|</span>
+                    <span class="lang-btn active">FR</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <aside class="sidebar">
+            <nav class="sidebar-nav">
+                <li><a href="#overview" class="active">Vue d'ensemble</a></li>
+                <li><a href="#specs">Architecture & Spécifications</a></li>
+                <li><a href="#design-choices">Choix de Conception</a></li>
+                <li><a href="#layout">Disposition & Fabrication</a></li>
+                <li><a href="#debugging">Prototypage & Résolution de Pannes</a></li>
+                <li><a href="#updates">Mises à jour du Projet</a></li>
+                <li><a href="#resources">Ressources</a></li>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+        <div class="project-header">
+            <div class="project-number">PROJET 01</div>
+
+            <div class="tag-container">
+                <span class="tag tag-pwr">haute-tension</span>
+                <span class="tag tag-hw">convertisseur à découpage</span>
+                <span class="tag tag-hw">système résonant</span>
+            </div>
+
+            <h1>Bobine Tesla SSTC Musicale Moyenne Puissance</h1>
+            <p class="lead">Une bobine Tesla à semi-conducteurs modulaire alimentée par un pont en H complet de MOSFETs, avec asservissement par antenne et modulation audio, conçue pour un montage rapide et modulaire.</p>
+            <div class="project-meta">
+                <div>
+                    <div class="meta-label">Tension d'Alimentation</div>
+                    <div class="meta-value">120V AC (~170V DC)</div>
+                </div>
+                <div>
+                    <div class="meta-label">Puissance Absorbée</div>
+                    <div class="meta-value">~250W</div>
+                </div>
+                <div>
+                    <div class="meta-label">Fréq. de Résonance</div>
+                    <div class="meta-value">~165 kHz</div>
+                </div>
+                <div>
+                    <div class="meta-label">Étincelle Max</div>
+                    <div class="meta-value">~25 cm</div>
+                </div>
+            </div>
+            <figcaption class="image-caption">Page en cours d'actualisation : mesures détaillées, schémas et vidéos à venir.</figcaption>
+        </div>
+
+        <figure class="hero-figure">
+            <img src="assets/SSTC/SSTC_on1.jpg" alt="SSTC en fonctionnement" class="project-img hero-img">
+            <figcaption class="image-caption">SSTC en fonctionnement sous 120V AC</figcaption>
+        </figure>
+
+        <section class="section" id="overview">
+            <h2>Vue d'ensemble & Objectifs</h2>
+            <p>Cette bobine Tesla solid state (SSTC) de moyenne puissance est l'aboutissement de recherches menées sur les circuits résonants à découpage. Mes premières itérations reposaient sur une topologie simple de type flyback, avant de migrer vers un hacheur push-pull à point milieu primaire, plus robuste tout en restant basique. Cette configuration offrait des résultats corrects, mais exposait les transistors à des surtensions transitoires de 2x à 3x Vin, limitant sévèrement la tension admissible.</p>
+            
+            <p>Afin de mieux encaisser les pics de tension et de monter en puissance, cette version adopte un pont en H complet (Full-Bridge) isolé par transformateur d'impulsion de grille (GDT). Les objectifs clés étaient d'atteindre une puissance supérieure à 150W (jusqu'à ~250W), d'intégrer une modulation audio et de garantir une modularité totale permettant d'isoler et de réutiliser le pont, le driver et l'étage audio sur de futurs bancs de test.</p>
+            
+            <div class="warning-box">
+                <h4>Consigne de Sécurité</h4>
+                <p>La haute tension à haute fréquence (RF) engendre des risques de brûlures profondes et de destruction irréversible des équipements de mesure. Le pont de puissance fonctionne sous des tensions de bus redressées mortelles (jusqu'à 170V DC). Ne faites jamais fonctionner le pont sans condensateurs de filtrage et de découplage de bus en place, évitez les boucles de masse lors des branchements d'oscilloscope, et blindez systématiquement la logique basse tension contre les champs électromagnétiques intenses.</p>
+            </div>
+        </section>
+
+        <section class="section" id="specs">
+            <h2>Architecture Système & Spécifications</h2>
+            <table class="parts-table">
+                <thead>
+                    <tr>
+                        <th>Paramètre / Sous-système</th>
+                        <th>Spécifications & Détails</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><div class="part-name">Topologie de Puissance</div></td>
+                        <td class="part-specs">Pont en H complet avec rétroaction capacitive par antenne (inspiré de la SSTC 5 de Steve Ward)</td>
+                    </tr>
+                    <tr>
+                        <td><div class="part-name">Interrupteurs de Puissance</div></td>
+                        <td class="part-specs">4× MOSFETs canal N IRFP250 (200V, crête 55A, boîtier TO-247)</td>
+                    </tr>
+                    <tr>
+                        <td><div class="part-name">Tension & Puissance de Service</div></td>
+                        <td class="part-specs">120V AC (bus redressé 170V DC) ; consommation ~250W (selon le rapport cyclique)</td>
+                    </tr>
+                    <tr>
+                        <td><div class="part-name">Fréquence de Résonance</div></td>
+                        <td class="part-specs">~165 kHz (accordée via le topload toroïdal ; résonance à vide ~190 kHz)</td>
+                    </tr>
+                    <tr>
+                        <td><div class="part-name">Longueur d'Étincelle</div></td>
+                        <td class="part-specs">~25 cm de décharge maximale</td>
+                    </tr>
+                    <tr>
+                        <td><div class="part-name">Enroulement Secondaire (Principal)</div></td>
+                        <td class="part-specs">975 spires, fil émaillé ~33 AWG issu d'un ventilateur micro-ondes, dimension: 100 × 185 mm</td>
+                    </tr>
+                    <tr>
+                        <td><div class="part-name">Enroulement Secondaire (Secondaire)</div></td>
+                        <td class="part-specs">1200 spires, fil plus fin, dimension: 100 × 155 mm</td>
+                    </tr>
+                    <tr>
+                        <td><div class="part-name">Enroulement Primaire</div></td>
+                        <td class="part-specs">6 spires</td>
+                    </tr>
+                    <tr>
+                        <td><div class="part-name">Alimentation & Bus DC</div></td>
+                        <td class="part-specs">Variac 3kVA + pont redresseur ; condensateur de filtrage 200V 3600µF avec 2× 0,47µF découplage HF</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="section" id="design-choices">
+            <h2>Choix de Conception</h2>
+
+            <h3>1. Circuit de Commande et Logique</h3>
+            <p><strong>Transformateur d'Impulsion de Grille (GDT) :</strong> Pour piloter les interrupteurs du côté haut (high-side), un GDT a été préféré aux drivers intégrés à bootstrap car il n'offre aucune isolation galvanique. Le GDT est bobiné à la main (8 spires) avec du câble ethernet torsadé sur un tore de ferrite récupéré d'une machine à laver. Les 4 secondaires pilotent directement les grilles des MOSFETs via des résistances d'amortissement individuelles de 10Ω. Le primaire est alimenté par une paire complémentaire push-pull (IRF510 / IRF9530) fournissant le courant crête de plusieurs ampères indispensable pour commuter la capacité de grille des IRFP250.</p>
+
+            <p><strong>Mécanisme d'Auto-oscillation :</strong> Les SSTC doivent impérativement s'adapter à la dérive de fréquence causée par les arcs électriques et la capacité parasite de l'environnement. J’ai donc choisi une boucle de rétroaction avec asservissement par antenne capacitive pour sa simplicité: il exploite le champ électrostatique du secondaire pour auto-entretenir l'oscillation sans générateur externe.</p>
+
+            <figure class="project-figure">
+                <div class="image-pair-grid">
+                    <img src="assets/SSTC/GateDriverFront.jpg" alt="Face avant de la carte de commande de grille" class="project-img">
+                    <img src="assets/SSTC/GateDriverBack.jpg" alt="Face arrière de la carte de commande de grille" class="project-img">
+                </div>
+                <figcaption class="image-caption">Carte de commande de grille et logique de pilotage — vues recto et verso</figcaption>
+            </figure>
+
+            <p><strong>Modulateur audio :</strong> Il convertit le signal audio analogique incident en un train d'impulsions modulé en largeur (PWM 1 bit). Un amplificateur opérationnel LM358 sert d'écrêteur demi-onde sur l'entrée Jack 3,5 mm. Cet écrêteur ne disposant pas d'un verrouillage strict du rapport cyclique, la modulation audio est cantonnée à de basses tensions (~50V DC) pour parer tout emballement thermique du pont.</p>
+
+            <figure class="project-figure">
+                <img src="assets/SSTC/AudioInterrupter.jpg" alt="Circuit de l'interrupteur audio" class="project-img img-compact">
+            </figure>
+
+            <h3>2. Circuit de Puissance</h3>
+            <p><strong>Le Pont en H Complet :</strong> Si les IGBT excellent pour les courants crêtes élevés et que les transistors bipolaires (BJT) s'avèrent trop lents avec une forte demande en courant de base, les MOSFETs (IRFP250) concilient vitesse de commutation et marge de courant. Avec un Vds nominal de 200V, la tension de bus reste le point critique. Le choix d'un pont complet par rapport à un demi-pont permet d'appliquer ±VBus aux bornes du primaire (contre seulement ±VBus/2 pour un demi pont), doublant la tension et maximisant la puissance apparente pour une même tension d'alimentation.</p>
+
+            <figure class="project-figure">
+                <img src="assets/SSTC/Bridge1.jpg" alt="Étage de puissance pont en H complet" class="project-img img-compact">
+                <figcaption class="image-caption">Pont en H et GDT</figcaption>
+            </figure>
+
+            <p><strong>Circuit d'Amortissement RC (Snubber) :</strong> Les commutations ultra-rapides sur les inductances parasites des pistes provoquent d'intenses surtensions inductives au blocage. Un snubber RC (condensateur de 4,7nF en série avec une résistance non inductive de 4,3Ω 3W) est raccordé en parallèle aux bornes du primaire afin d'absorber ces pics de tensions et préserver les MOSFETs.</p>
+
+            <p><strong>Alimentations Auxiliaires et Principale :</strong> La logique de commande et le driver de grille sont alimentés par des alimentations de laboratoire isolées multivoies (5V pour la logique, 12V pour l'étage driver). L'étage haute tension est fourni par un Variac 3kVA alimentant un pont redresseur de puissance, un condensateur de lissage électrolytique de 3600µF 200V, et deux condensateurs de découplage plastique 0,47µF haute fréquence.</p>
+        </section>
+
+        <section class="section" id="layout">
+            <h2>Disposition & Fabrication</h2>
+
+            <h3>Secondaire, Topload & Primaire</h3>
+            <p><strong>Bobinage du Secondaire :</strong> Le résonateur principal compte 975 spires de fil émaillé ~33 AWG bobiné sur un tube PVC de 100 mm de diamètre via un banc motorisé à variateur de vitesse. Le bobinage a ensuite été protégé par une couches de scotch. L'extrémité inférieure est reliée à la terre RF tandis que le sommet rejoint le topload via le cylindre métallique.</p>
+
+            <figure class="project-figure">
+                <div class="image-pair-grid grid-compact">
+                    <img src="assets/SSTC/sec1.jpeg" alt="Assemblage de l'enroulement secondaire 1" class="project-img">
+                    <img src="assets/SSTC/sec2.jpeg" alt="Assemblage de l'enroulement secondaire 2" class="project-img">
+                </div>
+                <figcaption class="image-caption">Premier secondaire à 975 spires (à gauche) et second à 1200 spires (à droite)</figcaption>
+            </figure>
+
+            <p><strong>Optimisation du Topload :</strong> Initialement constitué de deux demi-sphères métalliques, le topload a été remplacé par un tore en gaine d'aluminium flexible surmonté d'un dôme métalliques. Cette capacité accrue a abaissé la fréquence de résonance de ~180 kHz à ~165 kHz, réduisant drastiquement les pertes de commutation des MOSFETs, soulageant le circuit de commande des grilles et générant un champ électrique suffisant pour éclairer une lampe de bureau (led) à plus d'un mètre.</p>
+
+            <p><strong>Géométrie du Primaire :</strong> Un câble souple multibrin à 6 conducteurs pour plaque à induction a été configuré en un primaire solénoïdal de 6 spires autour d'un support en plastique. Les essais ont mis en évidence qu'un bobinage à 3 spires induisait des surtensions excessives et un fort courant à vide, alors que 6 spires offrent le compromis parfait entre inductance, coefficient de couplage et pertes par effet de peau.</p>
+
+            <figure class="project-figure">
+                <img src="assets/SSTC/SSTC_on2.png" alt="Géométrie du primaire et décharges de la bobine" class="project-img img-compact">
+                <figcaption class="image-caption">Agencement du primaire et décharge de la bobine en fonctionnement</figcaption>
+            </figure>
+
+            <h3>Intégration & Blindage Électromagnétique (EMI)</h3>
+            <p><strong>Pont Ultra-Compact :</strong> L'intégralité du pont en H a été compactée sur une plaque PCB perforée de 7×5 cm à l'aide de borniers à vis facilitant le remplacement des MOSFETs. La longueur des liaisons de puissance a été réduite au strict minimum pour minimiser l'inductance de boucle. Les quatre MOSFETs sont montés deux par deux sur des dissipateurs en aluminium et refroidis par un ventilateur axial de 10 cm.</p>
+
+            <figure class="project-figure">
+                <img src="assets/SSTC/Bridge2.jpg" alt="Assemblage de la carte du pont compact" class="project-img img-compact">
+            </figure>
+
+            <p><strong>Intégration Driver et Blindage :</strong> Pour minimiser l'inductance des pistes et éviter un déphasage qui serait néfaste à la commutation douce, le feedback et le driver ont été intégrés sur une plaque pcb perforée unique de 3×7 cm. Les liaisons de signaux critiques reliant l'interrupteur et le driver de grille ont été enveloppées d'un blindage en feuille d'aluminium relié à la masse afin de stopper toute auto-perturbation induite par les arcs.</p>
+        </section>
+
+        <section class="section" id="debugging">
+            <h2>Prototypage & Résolution de Pannes</h2>
+            <ol class="steps-list">
+                <li>
+                    <div class="step-title">Défaut d'Amorçage de l'Auto-oscillation</div>
+                    <div class="step-content">
+                        <p>Lors de la mise sous tension ou à faible tension de bus, la bobine refusait régulièrement d'amorcer l'oscillation, la boucle de rétroaction n'ayant aucun signal initial à amplifier. Le système restait inerte jusqu'à ce qu'un signal parasite aléatoire vienne déclencher la chaîne de commande.</p>
+                        <div class="tip">
+                            <div class="tip-label">Solution Technique</div>
+                            <div>Le fil de sortie du modulateur a été torsadé autour de l'antenne réceptrice. À chaque front montant du train d'impulsions, le couplage capacitif injecte une pichenette de tension dans l'antenne, ce qui lance instantanément la résonance de manière parfaitement fiable.</div>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="step-title">Oscillations Parasites de Grille et Dépassement Inductif</div>
+                    <div class="step-content">
+                        <p>Les premières observations à l'oscilloscope sous une alimentation isolée de 48V ont révélé un violent phénomène de « ringing » (rebonds) aux bornes des grilles flirtant dangereusement avec la tension critique absolue Vgs max (±20V) des IRFP250. Ce problème découlait d'une résonance LC entre l'inductance parasite du GDT et la capacité d'entrée des MOSFETs.</p>
+                        <div class="tip">
+                            <div class="tip-label">Solution Technique</div>
+                            <div>Insertion de résistances de grille individuelles (damping resistors) de 10Ω au plus près de chaque broche de transistor, lissant les signaux de commande en créneaux propres et parfaitement maîtrisés.</div>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="step-title">Distorsion par Effet Miller sous Haute Tension</div>
+                    <div class="step-content">
+                        <p>Dès que la tension de bus dépassait les 100V, un creux/palier prononcé apparaissait au milieu du front montant de grille à l'oscilloscope. La forte variation de tension dV/dt sur le drain réinjectait un courant de déplacement capacitif via la capacité parasite Cgd (effet Miller) dans la commande de grille. Bien que la commutation reste fonctionnelle aux tensions actuelles, une amplification de commande de grille supérieure (>15V) est prévue pour traverser plus vite ce palier lors des futures évolutions.</p>
+                    </div>
+                </li>
+                <li>
+                    <div class="step-title">Destruction par Absence de Capacité de Bus</div>
+                    <div class="step-content">
+                        <p>Lors d'un rebranchement rapide sur banc de test, le pont a été mis sous tension directement depuis le Variac et pont de diode sans réinsérer le condensateurs de lissage 3600µF. Dès l'arrêt d'une impulsion du modulateur, l'interruption instantanée du fort courant primaire a contraint l'inductance de fuite du Variac à se décharger sous la forme d'un pic inductif d'amplitude gigantesque, detruisant instantanément les 4 MOSFETs du pont.</p>
+                        <div class="tip">
+                            <div class="tip-label">Enseignement Retenu</div>
+                            <div>Le montage sur borniers modulaires a permis de remplacer le quatuor de transistors sans dessouder. Une capacité de découplage permanente soudée au plus près du pont ainsi que des fusibles ultra-rapides sur le bus DC ont été définitivement intégrés pour neutraliser les surtensions d'alimentation.</div>
+                        </div>
+                    </div>
+                </li>
+            </ol>
+        </section>
+
+        <section class="section" id="updates">
+            <h2>Mises à jour & Prochaines Étapes</h2>
+            
+            <p>Lors d’expériences récentes avec des transformateurs à haute tension, le module de pilotage des grilles a connu une défaillance critique. Un rapide diagnostic du circuit montre que la casse était due à l’étage amplificateur.(la paire IRF510 / IRF9530), qui a succombé à une surtension induite.</p>
+            
+            <p>Plutôt que de reconduire à l'identique un circuit vulnérable, cet incident est l'occasion idéale d'abandonner l'architecture SSTC pour évoluer vers une véritable <strong>bobine Tesla à semi-conducteurs à double résonance (DRSSTC)</strong>. Le pont complet et le primaire existants serviront de socle, mais l'insertion d'un circuit oscillant primaire accordé impose des contraintes nettement plus sévères, exigeant la conception d'un nouveau circuit de commande.</p>
+
+            <h3>La Transition vers la DRSSTC</h3>
+            <p>Dans une SSTC conventionnelle, le primaire n'est pas résonant : les courants commutés demeurent modérés. Dans une DRSSTC, l'ajout d'un banc de condensateurs primaires (MMC) accorde ce circuit exactement sur la fréquence de résonance du secondaire. Grâce au phénomène de surtension résonante, le courant dans le primaire culmine à plusieurs centaines d'ampères, projetant des arcs bien plus grand avec un échauffement moyen réduit sur le pont.</p>
+            
+            <p>Néanmoins, commuter des courants crêtes de cet ordre interdit formellement <strong>d'interrompre le pont au milieu d'un pic de courant</strong> sous peine de destruction immédiate des semi-conducteurs. Ouvrir le circuit en plein passage de plusieurs centaines d'ampères libère une énergie inductive capable d'endommager n'importe quel composant de puissance, quel que soit l'amortisseur présent.</p>
+
+            <h3>Prototype d'Interrupteur Synchrone</h3>
+            <p>Afin de découper les trains d'impulsions en toute sécurité sans commutation dure (hard-switching), la nouvelle électronique exploite une logique de déclenchement synchrone au passage par zéro du courant (ZCD — Zero-Current Detection), inspirée des travaux de Steve Ward. L'interrupteur ne coupe plus brutalement la commande : il arme la logique, et le pont s'éteint rigoureusement et uniquement lorsque l'onde de courant franchit le potentiel zéro.</p>
+
+            <figure class="project-figure">
+                <img src="assets/sstc/breadboard.jpeg" alt="Prototype de l'interrupteur DRSSTC sur platine d'expérimentation" class="project-img img-compact">
+                <figcaption class="image-caption">Prototype du circuit interrupteur synchrone DRSSTC. La sortie pilote un étage d'amplification (non présent sur la photo) avant d'aller dans le GDT (tore noir et rouge)</figcaption>
+            </figure>
+
+            <figure class="project-figure">
+                <img src="assets/sstc/waveform.jpeg" alt="Synchronisation et chronogrammes observés à l'oscilloscope" class="project-img img-compact">
+                <figcaption class="image-caption">Signal de sortie de l'interrupteur (jaune) et signal de commande de grille résultant (bleu)</figcaption>
+            </figure>
+
+            <div class="tip">
+                <div class="tip-label">Note de Conception : Protections Critiques</div>
+                <div>Le nouveau contrôleur intègre une limitation strict de temps d'activation (pulse width limit) ainsi qu'un détecteur de surintensité (OCD - Over-Current Detection), garantissant la mise en sécurité du pont avant tout dépassement d'amplitude destructive.</div>
+            </div>
+        </section>
+
+        <section class="section" id="resources">
+            <h2>Ressources Complémentaires</h2>
+            <div class="resources-list">
+                <a href="https://classictesla.com/java/javatc/javatc.html" target="_blank" rel="noopener noreferrer" class="resource-item" style="text-decoration: none;">
+                    <h4>Calculateur JavaTC</h4>
+                    <p>Dimensionnement géométrique, calcul de résonance et modélisation de capacité secondaire</p>
+                </a>
+                <a href="https://www.ti.com/document-viewer/lit/html/SSZTBC7" target="_blank" rel="noopener noreferrer" class="resource-item" style="text-decoration: none;">
+                    <h4>Conception de Snubbers RC (TI)</h4>
+                    <p>Note d'application Texas Instruments pour le calcul et l'amortissement des étages de puissance</p>
+                </a>
+                <a href="https://www.stevehv.4hv.org/SSTCindex.htm" target="_blank" rel="noopener noreferrer" class="resource-item" style="text-decoration: none;">
+                    <h4>Steve Ward SSTC</h4>
+                    <p>Schémas de référence et notes de conception pour bobines Tesla à asservissement par antenne</p>
+                </a>
+                <a href="https://www.loneoceans.com/labs/" target="_blank" rel="noopener noreferrer" class="resource-item" style="text-decoration: none;">
+                    <h4>Loneoceans Labs</h4>
+                    <p>Architectures avancées et documentation détaillée sur les DRSSTC et bobines musicales</p>
+                </a>
+            </div>
+        </section>
+        </main>
+    </div>
+    <script>
+        // Défilement fluide pour le menu de navigation
+        document.querySelectorAll('.sidebar-nav a').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+
+        // Mise à jour de l'onglet actif au défilement
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('.sidebar-nav a');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (scrollY >= (sectionTop - 150)) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

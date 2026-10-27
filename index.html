@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maker Portfolio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Hide scrollbar for Firefox */
+        html {
+            scrollbar-width: none;
+        }
+
+        /* Hide scrollbar for Chrome, Safari and Edge */
+        html::-webkit-scrollbar {
+            display: none;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0f0f0f;
+            color: #e8e8e8;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 80px 40px;
+        }
+
+        header {
+            margin-bottom: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .header-content {
+            max-width: 600px;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 300;
+            color: #ffffff;
+            margin-bottom: 20px;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #999;
+            font-weight: 400;
+        }
+
+        .lang-switch {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #141414;
+            border: 1px solid #222;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+        }
+
+        .lang-btn {
+            color: #666;
+            text-decoration: none;
+            transition: color 0.2s ease;
+            cursor: pointer;
+        }
+
+        .lang-btn:hover {
+            color: #bbb;
+        }
+
+        .lang-btn.active {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .lang-divider {
+            color: #333;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2px;
+            background: #1a1a1a;
+            margin-bottom: 40px;
+        }
+
+        .project-card {
+            background: #0f0f0f;
+            padding: 50px 40px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid #1a1a1a;
+            position: relative;
+        }
+
+        .project-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 0;
+            background: #fff;
+            transition: height 0.3s ease;
+        }
+
+        .project-card:hover {
+            background: #141414;
+            border-color: #2a2a2a;
+        }
+
+        .project-card:hover::before {
+            height: 100%;
+        }
+
+        .project-number {
+            font-size: 0.85rem;
+            color: #666;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            margin-bottom: 20px;
+        }
+
+        .project-title {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: #ffffff;
+            font-weight: 400;
+            letter-spacing: -0.01em;
+        }
+
+        .project-description {
+            color: #888;
+            line-height: 1.7;
+            font-size: 0.95rem;
+        }
+
+        /* Tag Styles */
+        .tag-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid #1a1a1a;
+        }
+
+        .tag {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            border: 1px solid transparent;
+        }
+
+        .tag-hw { color: #f59e0b; border-color: rgba(245, 158, 11, 0.3); background: rgba(245, 158, 11, 0.05); }
+        .tag-sw { color: #3b82f6; border-color: rgba(59, 130, 246, 0.3); background: rgba(59, 130, 246, 0.05); }
+        .tag-pwr { color: #ef4444; border-color: rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.05); }
+        .tag-rf { color: #10b981; border-color: rgba(16, 185, 129, 0.3); background: rgba(16, 185, 129, 0.05); }
+
+        .cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #fff;
+            font-size: 0.9rem;
+            margin-top: 20px;
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .project-card:hover .cta {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .cta::after {
+            content: '→';
+            transition: transform 0.3s ease;
+        }
+
+        .project-card:hover .cta::after {
+            transform: translateX(5px);
+        }
+
+        .updating-notice {
+            color: #666;
+            font-size: 0.9rem;
+            font-style: italic;
+        }
+
+        @media (max-width: 1024px) {
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .container {
+                padding: 60px 30px;
+            }
+
+            header {
+                flex-direction: column;
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1 id="main-title">Maker Portfolio</h1>
+                <p class="subtitle" id="main-subtitle">A showcase of engineering projects, hardware prototyping and creative builds</p>
+            </div>
+            <div class="lang-switch">
+                <span class="lang-btn active" id="btn-en" onclick="setLanguage('en')">EN</span>
+                <span class="lang-divider">|</span>
+                <span class="lang-btn" id="btn-fr" onclick="setLanguage('fr')">FR</span>
+            </div>
+        </header>
+
+        <div class="projects-grid">
+            <div class="project-card" onclick="goToProject()">
+                <div class="project-number">PROJECT 01</div>
+                <h2 class="project-title" id="proj-title">Medium Power Musical SSTC</h2>
+                <p class="project-description" id="proj-desc">A modular solid-state Tesla coil driven by a full H-bridge of MOSFETs with secondary antenna feedback and audio modulation capabilities.</p>
+                <div class="tag-container">
+                    <span class="tag tag-pwr">high-voltage</span>
+                    <span class="tag tag-hw">switching converter</span>
+                    <span class="tag tag-hw">resonant system</span>
+                </div>
+                <div class="cta" id="proj-cta">View Project</div>
+            </div>
+        </div>
+
+        <div class="updating-notice" id="updating-text">
+            Page is still updating: more projects coming soon.
+        </div>
+    </div>
+
+    <script>
+        let currentLang = 'en';
+
+        const translations = {
+            en: {
+                title: "Maker Portfolio",
+                subtitle: "A showcase of engineering projects, hardware prototyping and creative builds",
+                projTitle: "Medium Power Musical SSTC",
+                projDesc: "A modular solid-state Tesla coil driven by a full H-bridge of MOSFETs with secondary antenna feedback and audio modulation capabilities.",
+                projCta: "View Project",
+                updatingText: "Page is still updating: more projects coming soon."
+            },
+            fr: {
+                title: "Maker Portfolio",
+                subtitle: "Une vitrine de projets d'ingénierie, de prototypage matériel et de réalisations créatives",
+                projTitle: "SSTC Musical de Moyenne Puissance",
+                projDesc: "Une bobine Tesla à semi-conducteurs modulaire pilotée par un pont en H complet de MOSFETs, dotée d'une rétroaction par antenne secondaire et de modulation audio.",
+                projCta: "Voir le projet",
+                updatingText: "Page en cours de mise à jour : d'autres projets arrivent bientôt."
+            }
+        };
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('preferredLang', lang);
+            
+            document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+            document.getElementById('btn-fr').classList.toggle('active', lang === 'fr');
+
+            document.getElementById('main-title').textContent = translations[lang].title;
+            document.getElementById('main-subtitle').textContent = translations[lang].subtitle;
+            document.getElementById('proj-title').textContent = translations[lang].projTitle;
+            document.getElementById('proj-desc').textContent = translations[lang].projDesc;
+            document.getElementById('proj-cta').textContent = translations[lang].projCta;
+            document.getElementById('updating-text').textContent = translations[lang].updatingText;
+        }
+
+        // Handle URL parameters or saved preferences on load
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const langParam = urlParams.get('lang');
+            const savedLang = langParam || localStorage.getItem('preferredLang');
+            
+            if (savedLang === 'fr') {
+                setLanguage('fr');
+            }
+        });
+
+        function goToProject() {
+            if (currentLang === 'fr') {
+                window.location.href = 'project01fr.html';
+            } else {
+                window.location.href = 'project01eng.html';
+            }
+        }
+    </script>
+</body>
+</html>

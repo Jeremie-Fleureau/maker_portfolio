@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medium Power Audio SSTC</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+    /* Hide scrollbar for Firefox */
+    html {
+        scrollbar-width: none;
+    }
+
+    /* Hide scrollbar for Chrome, Safari and Edge */
+    html::-webkit-scrollbar {
+        display: none;
+    }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0f0f0f;
+            color: #d4d4d4;
+            line-height: 1.8;
+        }
+
+        /* --- Tag System Styles --- */
+        .tag-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .tag {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            border: 1px solid transparent;
+        }
+
+        .tag-hw { color: #f59e0b; border-color: rgba(245, 158, 11, 0.3); background: rgba(245, 158, 11, 0.05); }
+        .tag-sw { color: #3b82f6; border-color: rgba(59, 130, 246, 0.3); background: rgba(59, 130, 246, 0.05); }
+        .tag-pwr { color: #ef4444; border-color: rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.05); }
+        .tag-rf { color: #10b981; border-color: rgba(16, 185, 129, 0.3); background: rgba(16, 185, 129, 0.05); }
+        /* -------------------------- */
+
+        .navbar {
+            background: #0f0f0f;
+            padding: 30px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .back-button {
+            color: #888;
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: color 0.3s ease;
+        }
+
+        .back-button:hover {
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 80px 40px;
+            display: flex;
+            gap: 60px;
+        }
+
+        .sidebar {
+            width: 280px;
+            position: sticky;
+            top: 120px;
+            height: fit-content;
+            flex-shrink: 0;
+        }
+
+        .sidebar-nav {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 8px;
+        }
+
+        .sidebar-nav a {
+            display: block;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            padding: 8px 0;
+            transition: color 0.3s ease;
+            border-left: 2px solid transparent;
+            padding-left: 15px;
+        }
+
+        .sidebar-nav a:hover {
+            color: #fff;
+            border-left-color: #fff;
+        }
+
+        .sidebar-nav a.active {
+            color: #fff;
+            border-left-color: #fff;
+        }
+
+        .main-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .project-header {
+            margin-bottom: 80px;
+            border-bottom: 1px solid #1a1a1a;
+            padding-bottom: 60px;
+        }
+
+        .project-number {
+            font-size: 0.85rem;
+            color: #666;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 300;
+            color: #ffffff;
+            margin-bottom: 30px;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }
+
+        .lead {
+            font-size: 1.2rem;
+            color: #888;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+
+        .project-meta {
+            display: flex;
+            gap: 40px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .meta-label {
+            color: #888;
+            margin-bottom: 5px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .meta-value {
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        .section {
+            margin-bottom: 80px;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            font-weight: 400;
+            color: #ffffff;
+            margin-bottom: 30px;
+            letter-spacing: -0.01em;
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            font-weight: 400;
+            color: #fff;
+            margin-top: 40px;
+            margin-bottom: 20px;
+        }
+
+        p {
+            color: #888;
+            margin-bottom: 20px;
+        }
+
+        .warning-box {
+            background: #1a1111;
+            border-left: 3px solid #ef4444;
+            padding: 30px;
+            margin: 40px 0;
+        }
+
+        .warning-box h4 {
+            color: #ef4444;
+            margin-bottom: 15px;
+            font-size: 1rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .warning-box p {
+            color: #aaa;
+        }
+
+        .parts-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+        }
+
+        .parts-table th {
+            text-align: left;
+            padding: 15px 20px;
+            background: #1a1a1a;
+            color: #888;
+            font-weight: 500;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .parts-table td {
+            padding: 20px;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        .parts-table tr:hover {
+            background: #141414;
+        }
+
+        .part-name {
+            color: #fff;
+            font-weight: 400;
+            margin-bottom: 5px;
+        }
+
+        .part-specs {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .steps-list {
+            counter-reset: step;
+            list-style: none;
+        }
+
+        .steps-list li {
+            counter-increment: step;
+            margin-bottom: 50px;
+            position: relative;
+            padding-left: 80px;
+        }
+
+        .steps-list li::before {
+            content: counter(step, decimal-leading-zero);
+            position: absolute;
+            left: 0;
+            top: 0;
+            font-size: 1rem;
+            color: #666;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+        }
+
+        .step-title {
+            font-size: 1.2rem;
+            color: #fff;
+            margin-bottom: 15px;
+            font-weight: 400;
+        }
+
+        .step-content {
+            color: #888;
+            line-height: 1.8;
+        }
+
+        .tip {
+            background: #141414;
+            border-left: 3px solid #444;
+            padding: 20px 25px;
+            margin: 20px 0;
+            font-size: 0.95rem;
+        }
+
+        .tip-label {
+            color: #888;
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .resources-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2px;
+            background: #1a1a1a;
+            margin-top: 30px;
+        }
+
+        .resource-item {
+            background: #0f0f0f;
+            padding: 30px 25px;
+            transition: background 0.3s ease;
+        }
+
+        .resource-item:hover {
+            background: #141414;
+        }
+
+        .resource-item h4 {
+            color: #fff;
+            font-size: 1rem;
+            margin-bottom: 8px;
+            font-weight: 400;
+        }
+
+        .resource-item p {
+            color: #666;
+            font-size: 0.85rem;
+        }
+	.lang-switch {
+	    display: inline-flex;
+	    align-items: center;
+	    gap: 8px;
+	    background: #141414;
+	    border: 1px solid #222;
+	    padding: 4px 10px;
+	    border-radius: 20px;
+	    font-size: 0.8rem;
+	    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+	}
+	.lang-btn {
+	    color: #666;
+	    text-decoration: none;
+	    transition: color 0.2s ease;
+	}
+	.lang-btn:hover {
+	    color: #bbb;
+	}
+	.lang-btn.active {
+	    color: #fff;
+	    font-weight: 600;
+	}
+	.lang-divider {
+	    color: #333;
+	}
+        /* --- Image Gallery & Figure Styles --- */
+        .project-figure {
+            margin: 35px auto;
+        }
+
+        .project-img {
+            border-radius: 4px;
+            border: 1px solid #1a1a1a;
+            display: block;
+            object-fit: contain;
+        }
+
+        /* Scaled down hero image */
+        .hero-figure {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px auto 45px auto;
+        }
+
+        .hero-img {
+            max-width: 420px;
+            width: 100%;
+            max-height: 854px;
+        }
+
+        /* Standard centered compact images */
+        .img-compact {
+            max-width: 560px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .image-caption {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 10px;
+            text-align: center;
+            font-style: italic;
+        }
+
+        /* Side-by-side grid */
+        .image-pair-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .image-pair-grid .project-img {
+            width: 100%;
+            height: auto;
+        }
+
+        /* Slightly tighter grid for the secondary coils */
+        .grid-compact {
+            max-width: 650px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                position: static;
+                width: 100%;
+                border-bottom: 1px solid #1a1a1a;
+                padding-bottom: 30px;
+                margin-bottom: 40px;
+            }
+            
+            .sidebar-nav {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+            
+            .sidebar-nav a {
+                border-left: none;
+                border-bottom: 2px solid transparent;
+                padding-left: 0;
+                padding-bottom: 5px;
+            }
+            
+            .sidebar-nav a:hover,
+            .sidebar-nav a.active {
+                border-left-color: transparent;
+                border-bottom-color: #fff;
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            .container { padding: 60px 30px; }
+            .project-meta { flex-direction: column; gap: 20px; }
+            .steps-list li { padding-left: 60px; }
+            .image-pair-grid { grid-template-columns: 1fr; }
+            .hero-img, .img-compact, .grid-compact { max-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar">
+    <div class="nav-container">
+        <a href="index.html" class="back-button">← Back to Projects</a>
+        <div style="display: flex; align-items: center; gap: 20px;">
+            <div style="color: #666; font-size: 0.9rem;">PROJECT 01</div>
+            <div class="lang-switch">
+                <span class="lang-btn active">EN</span>
+                <span class="lang-divider">|</span>
+                <a href="project01fr.html" class="lang-btn">FR</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+    <div class="container">
+        <aside class="sidebar">
+            <nav class="sidebar-nav">
+                <li><a href="#overview" class="active">Overview</a></li>
+                <li><a href="#specs">Architecture & Specs</a></li>
+                <li><a href="#design-choices">Design Choices</a></li>
+                <li><a href="#layout">Layout & Construction</a></li>
+                <li><a href="#debugging">Prototyping & Failures</a></li>
+                <li><a href="#updates">Project Updates</a></li>
+                <li><a href="#resources">Resources</a></li>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+        <div class="project-header">
+            <div class="project-number">PROJECT 01</div>
+
+            <div class="tag-container">
+                <span class="tag tag-pwr">high-voltage</span>
+                <span class="tag tag-hw">switching converter</span>
+                <span class="tag tag-hw">resonant system</span>
+            </div>
+
+            <h1>Medium Power Musical SSTC</h1>
+            <p class="lead">A modular solid-state Tesla coil driven by a full H-bridge of MOSFETs with secondary antenna feedback and audio modulation capabilities, designed for an easy and modular setup.</p>
+            <div class="project-meta">
+                <div>
+                    <div class="meta-label">Operating Voltage</div>
+                    <div class="meta-value">120V AC (~170V DC)</div>
+                </div>
+                <div>
+                    <div class="meta-label">Power Draw</div>
+                    <div class="meta-value">~250W</div>
+                </div>
+                <div>
+                    <div class="meta-label">Resonant Freq</div>
+                    <div class="meta-value">~165 kHz</div>
+                </div>
+                <div>
+                    <div class="meta-label">Max Spark</div>
+                    <div class="meta-value">~25 cm</div>
+                </div>
+            </div>
+            <figcaption class="image-caption">Page is still updating: more measurements, schematics and video coming soon.</figcaption>
+        </div>
+
+        <figure class="hero-figure">
+            <img src="assets/SSTC/SSTC_on1.jpg" alt="SSTC in Operation" class="project-img hero-img">
+            <figcaption class="image-caption">SSTC in Operation at 120V AC</figcaption>
+        </figure>
+
+        <section class="section" id="overview">
+            <h2>Overview & Objectives</h2>
+            <p>This medium-power Solid State Tesla Coil (SSTC) evolved from earlier work on resonant switching circuits. Initial iterations relied on a simple flyback topology, but I quickly transitioned to a beefier yet still very simple push-pull driver (with a center-tapped primary). This topology offered decent performance, but the transistors were subject to 2x to 3x Vin transients, severely bottlenecking input voltage.</p>
+            
+            <p>To better handle voltage spike and step up power, this build transitions to a full H-bridge topology with isolated gate drive transformers (GDTs). The primary goals were achieving &gt;150W of power (reaching ~250W), audio modulation via an interrupter, and maintaining complete modularity so that the bridge, driver, and audio circuits could be decoupled and reused across other projects.</p>
+            
+            <div class="warning-box">
+                <h4>Safety Notice</h4>
+                <p>High voltage, high frequency RF power can cause severe burns and permanent equipment damage. The switching bridge operates at lethal rectified mains voltages (up to 170V DC). Never operate the bridge without filter and bus capacitors installed, avoid ground loop short circuits when using oscilloscopes, and shield sensitive logic against intense electromagnetic fields.</p>
+            </div>
+        </section>
+
+        <section class="section" id="specs">
+            <h2>System Architecture & Specifications</h2>
+            <table class="parts-table">
+                <thead>
+                    <tr>
+                        <th>Parameter / Subsystem</th>
+                        <th>Specification & Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><div class="part-name">Operating Topology</div></td>
+                        <td class="part-specs">Full H-bridge with secondary capacitive antenna feedback (inspired by Steve Ward SSTC 5)</td>
+                    </tr>
+                    <tr>
+                        <td><div class="part-name">Power Switches</div></td>
+                        <td class="part-specs">4× IRFP250 N-Channel Power MOSFETs (200V, 55A peak, TO-247)</td>
+                    </tr>
+                    <tr>
+                        <td><div class="part-name">Operating Voltage & Power</div></td>
+                        <td class="part-specs">120V AC (170V DC rectified bus); ~250W draw (dependent on duty cycle)</td>
+                    </tr>
+                    <tr>
+                        <td><div class="part-name">Resonant Frequency</div></td>
+                        <td class="part-specs">~165 kHz (tuned via toroidal topload; baseline ~190 kHz)</td>
+                    </tr>
+                    <tr>
+                        <td><div class="part-name">Spark Performance</div></td>
+                        <td class="part-specs">~25 cm maximum discharge length</td>
+                    </tr>
+                    <tr>
+                        <td><div class="part-name">Secondary Coil (Primary Build)</div></td>
+                        <td class="part-specs">975 turns, ~33 AWG salvaged microwave fan wire, 100 × 185 mm form</td>
+                    </tr>
+                    <tr>
+                        <td><div class="part-name">Secondary Coil (Alternative)</div></td>
+                        <td class="part-specs">1200 turns, thinner wire, 100 × 155 mm form</td>
+                    </tr>
+                    <tr>
+                        <td><div class="part-name">Primary Coil</div></td>
+                        <td class="part-specs">6 turns</td>
+                    </tr>
+                    <tr>
+                        <td><div class="part-name">Power Supply & DC Bus</div></td>
+                        <td class="part-specs">3kVA Variac + full bridge rectifier; 200V 3600µF bus cap with 2× 0.47µF filter caps</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="section" id="design-choices">
+            <h2>Design Choices</h2>
+
+            <h3>1. Logic Control Circuit</h3>
+            <p><strong>Gate Drive Transformer (GDT):</strong> Because high-side switching was necessary, a GDT was selected over bootstrap drivers due to ruggedness and isolation. The GDT is wound by hand (8 turns) using twisted ethernet wire around a salvaged laundry machine ferrite toroid. The 4 secondaries connect directly to the FET gates via individual 10Ω damping resistors. The primary is driven by a complementary push-pull pair (IRF510 / IRF9530) to deliver the multi-amp peak drive current demanded by the IRFP250 gate capacitance.</p>
+
+            <p><strong>Feedback Mechanism:</strong> Solid-state coils require frequency tracking as arcs and environmental capacitance cause resonant frequency drift. Secondary antenna feedback was chosen for simplicity, capacitively coupling with the secondary field to establish sustained self-oscillation without needing an external signal generator.</p>
+
+            <figure class="project-figure">
+                <div class="image-pair-grid">
+                    <img src="assets/SSTC/GateDriverFront.jpg" alt="Gate Driver Board Front" class="project-img">
+                    <img src="assets/SSTC/GateDriverBack.jpg" alt="Gate Driver Board Back" class="project-img">
+                </div>
+                <figcaption class="image-caption">Gate driver and logic control board — front and back views</figcaption>
+            </figure>
+
+            <p><strong>Music Interrupter:</strong> Converts incoming analog audio signals into a 1-bit on/off pulse-width modulated train. An LM358 operational amplifier acts as a half-wave clipper on the 3.5mm jack input. Since the basic clipper lacks hard duty cycle limiting, audio modulation is strictly tested at lower voltages (~50V DC) to prevent bridge thermal runaway.</p>
+
+            <figure class="project-figure">
+                <img src="assets/SSTC/AudioInterrupter.jpg" alt="Audio Interrupter Circuit" class="project-img img-compact">
+            </figure>
+
+            <h3>2. Power Circuit</h3>
+            <p><strong>The Full H-Bridge:</strong> While IGBTs offer high peak power and BJTs are too slow with high base currents, MOSFETs (IRFP250) provide fast switching speeds and high current headroom. Because the FETs are rated for 200V Vds, bus voltage was the primary bottleneck. A full H-bridge was selected over a half-bridge because it drives ±VBus across the primary rather than ±VBus/2, maximizing primary volt-amperes for a given bus level.</p>
+
+            <figure class="project-figure">
+                <img src="assets/SSTC/Bridge1.jpg" alt="Full H-Bridge Power Stage" class="project-img img-compact">
+                <figcaption class="image-caption">Bridge and GDT</figcaption>
+            </figure>
+
+            <p><strong>RC Snubber Network:</strong> Fast switching across parasitic loop inductances creates steep inductive turn-off spikes. An RC snubber consisting of a 4.7nF capacitor in series with a 4.3Ω 3W non-inductive resistor is placed across the bridge output in parallel with the primary coil to clamp transient spikes and protect the FETs.</p>
+
+            <p><strong>Power Supplies:</strong> Control logic and the gate driver stage run off isolated multi-channel bench power supplies (5V for logic, 12V for driver amplification). The high-voltage power stage runs off a 3kVA variac, feeding a high-current bridge rectifier, 3600µF 200V electrolytic bulk bus capacitor, and dual 0.47µF high-frequency bypass capacitors.</p>
+        </section>
+
+        <section class="section" id="layout">
+            <h2>Layout & Construction</h2>
+
+            <h3>Secondary, Topload & Primary</h3>
+            <p><strong>Secondary Winding:</strong> The first secondary winding consists of 975 turns of ~33 AWG enameled copper wire wound on a 100mm diameter PVC pipe using a variable-speed motorized winding jig. The completed winding was sealed and insulated with a layer of tape. The lower terminal connects to RF ground while the upper terminal connects via a metalic cylinder to the topload.</p>
+
+            <figure class="project-figure">
+                <div class="image-pair-grid grid-compact">
+                    <img src="assets/SSTC/sec1.jpeg" alt="Secondary Winding Assembly 1" class="project-img">
+                    <img src="assets/SSTC/sec2.jpeg" alt="Secondary Winding Assembly 2" class="project-img">
+                </div>
+                <figcaption class="image-caption">First secondary at 975 turns (left) and second at 1200 turns (right)</figcaption>
+            </figure>
+
+            <p><strong>Topload Optimization:</strong> Originally built from two mated metal bowls, the topload was upgraded to a flexible aluminum toroidal duct combined with a top dome. The increased capacitance dropped the resonant frequency from ~180 kHz down to ~165 kHz, reducing MOSFET switching losses, easing GDT drive requirements, and producing dense electric fields capable of lighting desk lamps (led) a meter away.</p>
+
+            <p><strong>Primary Geometry:</strong> A 6-wire induction stove cable was arranged into a 6-turn primary around a plastic form. Testing confirmed that fewer turns (3 turns) caused excessive inductive transients and idle current, while 6 turns hit the sweet spot between coil inductance, coupling factor, and skin effect losses.</p>
+
+            <figure class="project-figure">
+                <img src="assets/SSTC/SSTC_on2.png" alt="Primary Geometry & Coil Discharges" class="project-img img-compact">
+                <figcaption class="image-caption">Primary coil arrangement and live coil operation</figcaption>
+            </figure>
+
+            <h3>Layout & EMI Shielding</h3>
+            <p><strong>Compact Bridge Board:</strong> The full bridge was compacted onto a 7×5 cm perfboard using screw terminals for the MOSFETs. Traces and interconnects were kept minimal to reduce loop inductance. The four FETs share two aluminum heatsinks configured with inward-facing fins cooled by a single 10cm fan.</p>
+
+            <figure class="project-figure">
+                <img src="assets/SSTC/Bridge2.jpg" alt="Compact Bridge Board Assembly" class="project-img img-compact">
+            </figure>
+
+            <p><strong>Integrated Driver Board & Shielding:</strong> To avoid trace inductances and phase lag that cause hard switching, the feedback and gate driver circuits were unified on a single 3×7 cm board. Sensitive signal lines connecting the interrupter and gate driver were enclosed in grounded aluminum foil shielding to eliminate self-interference caused by strong E-field discharge.</p>
+        </section>
+
+        <section class="section" id="debugging">
+            <h2>Prototyping & Failures (Debugging)</h2>
+            <ol class="steps-list">
+                <li>
+                    <div class="step-title">Low-Power Self-Oscillation Stall</div>
+                    <div class="step-content">
+                        <p>At startup or low bus voltages, the coil frequently failed to initiate oscillation because the feedback loop had no initial switching signal to amplify. The coil remained idle until a stray spike triggered the gate driver.</p>
+                        <div class="tip">
+                            <div class="tip-label">The Fix</div>
+                            <div>The interrupter line was wrapped around the feedback antenna wire. Every time the interrupter fires high, capacitive edge coupling injects an immediate startup pulse into the antenna, kickstarting self-resonance reliably.</div>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="step-title">Gate Ringing & Inductive Overshoot</div>
+                    <div class="step-content">
+                        <p>Initial oscilloscope testing with an isolated 48V supply revealed severe gate ringing and overshoot pushing close to the ±20V Vgs absolute maximum rating of the IRFP250s, caused by an LC resonance between GDT leakage inductance and MOSFET gate capacitance.</p>
+                        <div class="tip">
+                            <div class="tip-label">The Fix</div>
+                            <div>Added individual 10Ω gate damping resistors directly at each MOSFET terminal, smoothing the waveforms into clean square waves with controlled edges.</div>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="step-title">High-Voltage Miller Effect Distortion</div>
+                    <div class="step-content">
+                        <p>When bus voltage was raised past 100V, oscilloscope probes revealed a plateau/dip midway through the rising gate drive waveform. Rapid dV/dt on the drain coupled displacement current through the Cgd (Miller) capacitance back into the gate node. While switching remained stable at current power levels, higher gate drive voltages (&gt;15V) are planned to overcome the plateau during future upgrades.</p>
+                    </div>
+                </li>
+                <li>
+                    <div class="step-title">Missing Bus Capacitor Incident</div>
+                    <div class="step-content">
+                        <p>During a modular test bench reassembly, the bridge was energized directly from the variac and bridge rectifier without the 3600µF DC bus capacitor in place. When the interrupter pulsed off, the sudden interruption of high primary current caused the large leakage inductance of the variac to discharge an enormous inductive flyback spike, instantly puncturing the Vds ratings and destroying all 4 MOSFETs.</p>
+                        <div class="tip">
+                            <div class="tip-label">Takeaway</div>
+                            <div>Modular screw terminals allowed the blown FETs to be swapped immediately. Permanent in-line bypass capacitance and quick-blow DC bus fuses were added to prevent inductive supply surges.</div>
+                        </div>
+                    </div>
+                </li>
+            </ol>
+        </section>
+
+        <section class="section" id="updates">
+            <h2>Updates & Next Steps</h2>
+            
+            <p>During recent test with high-voltage trasformer, the interrupter module suffered a critical failure. Failure Analysis showed that the damage was largely confined to the gate driver’s complementary MOSFET pair (IRF510 / IRF9530), which succumbed to an induced voltage transient.</p>
+            
+            <p>Rather than simply patching the existing board, this setback provides the natural pivot to retire the SSTC architecture and transition to a full <strong>Dual-Resonant Solid State Tesla Coil (DRSSTC)</strong>. The existing full-bridge and primary will serve as the foundation, but moving to a resonant primary tank introduces significantly harsher switching environments that demand an overhaul of the drive and interruption electronics.</p>
+
+            <h3>The Transition to DRSSTC</h3>
+            <p>In a standard SSTC, the primary is non-resonant, meaning switching currents are relatively modest. In a DRSSTC, adding a series primary tank capacitor tunes the primary circuit to the exact secondary resonant frequency. This yields primary tank currents reaching several hundreds of amperes through resonant rise, creating massive sparks with significantly reduced average thermal dissipation on the bridge.</p>
+            
+            <p>However, running at such extreme peak currents means <strong>interrupting the bridge mid-cycle is fatal</strong> for the power switches. Hard-switching when hundreds of amps are flowing through the primary induces inductive flyback spikes that will instantly exceed the breakdown voltage of any transistor, regardless of snubber networks.</p>
+
+            <h3>Synchronous Interrupter Prototype</h3>
+            <p>To safely govern pulse bursts without mid-cycle interruption, the new driver implements zero-current-crossing (ZCD) synchronous gating—inspired by Steve Ward’s DRSSTC interrupter architectures. Instead of blindly chopping the drive signal asynchronously, the interrupter arms the gate logic, and the bridge only shuts off precisely when the primary tank current crosses zero.</p>
+
+            <figure class="project-figure">
+                <img src="assets/sstc/breadboard.jpeg" alt="DRSSTC interrupter prototype on breadboard" class="project-img img-compact">
+                <figcaption class="image-caption">Prototype of the DRSSTC interrupter circuit. The output is fed into an amplifier stage (missing in this circuit) and into the GTD (in black and red)</figcaption>
+            </figure>
+
+            <figure class="project-figure">
+                <img src="assets/sstc/waveform.jpeg" alt="Oscilloscope gate enable and pulse timing" class="project-img img-compact">
+                <figcaption class="image-caption">Interrupter Output (yellow) & Gate signal (blue)</figcaption>
+            </figure>
+
+            <div class="tip">
+                <div class="tip-label">Design Note: Critical Safeguards</div>
+                <div>The new control board will integrates hard maximum on-time limits and Over-Current Detection (OCD), ensuring the bridge shuts down safely before exessive current draw or shoot-through occurs.</div>
+            </div>
+        </section>
+	<section class="section" id="resources">
+            <h2>Additional Resources</h2>
+            <div class="resources-list">
+                <a href="https://classictesla.com/java/javatc/javatc.html" target="_blank" rel="noopener noreferrer" class="resource-item" style="text-decoration: none;">
+                    <h4>JavaTC Calculator</h4>
+                    <p>Coil geometry, resonance, and secondary capacitance modeling</p>
+                </a>
+                <a href="https://www.ti.com/document-viewer/lit/html/SSZTBC7" target="_blank" rel="noopener noreferrer" class="resource-item" style="text-decoration: none;">
+                    <h4>RC Snubber Design (TI)</h4>
+                    <p>Application guide for calculating and tuning power stage RC snubbers</p>
+                </a>
+                <a href="https://www.stevehv.4hv.org/SSTCindex.htm" target="_blank" rel="noopener noreferrer" class="resource-item" style="text-decoration: none;">
+                    <h4>Steve Ward SSTC</h4>
+                    <p>Reference schematics and design notes for antenna-feedback solid state coils</p>
+                </a>
+                <a href="https://www.loneoceans.com/labs/" target="_blank" rel="noopener noreferrer" class="resource-item" style="text-decoration: none;">
+                    <h4>Loneoceans Labs</h4>
+                    <p>Advanced DRSSTC and musical solid-state coil architectures and documentation</p>
+                </a>
+            </div>
+        </section>
+        </main>
+    </div>
+    <script>
+        // Smooth scroll for navigation
+        document.querySelectorAll('.sidebar-nav a').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+
+        // Update active state on scroll
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('.sidebar-nav a');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (scrollY >= (sectionTop - 150)) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
