@@ -2,7 +2,7 @@
 
 A personal maker portfolio showcasing engineering projects. 
 
-**Live Site:** (https://jeremie-fleureau.github.io/maker_portfolio/)
+## **Live Site:** (https://jeremie-fleureau.github.io/maker_portfolio/)
 
 ## About
 This portfolio hosts documentation and deep-dive guides for various maker projects, featuring multi-language support (English / French) and detailed engineering logs.
