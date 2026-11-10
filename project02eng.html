@@ -543,7 +543,7 @@
         </div>
 
         <figure class="hero-figure">
-            <img src="assets/Heating.jpg" alt="Induction Heater Operating" class="project-img hero-img">
+            <img src="assets/InductionHeating/Heating.jpg" alt="Induction Heater Operating" class="project-img hero-img">
             <figcaption class="image-caption">Induction Heater operating at 30V DC, ~180W, 53 kHz</figcaption>
         </figure>
 
@@ -609,7 +609,7 @@
             <p>To generate high-frequency magnetic fields, direct current is converted into alternating current and fed through a work coil. These circuits employ LC resonant tanks to maximize efficiency, enable soft switching (ZCS/ZVS), and achieve current amplification.</p>
 
             <figure class="project-figure">
-                <img src="assets/schematic1.png" alt="Induction Heater System Schematic" class="project-img img-large">
+                <img src="assets/InductionHeating/schematic1.png" alt="Induction Heater System Schematic" class="project-img img-large">
                 <figcaption class="image-caption">Overall schematic showing the H-bridge power stage and isolated gate driver control board</figcaption>
             </figure>
 
@@ -626,7 +626,7 @@ I settled on a <strong>Series Resonant Configuration</strong> rather than a para
             <p><strong>MOSFET Upgrade:</strong> While initially testing with IRFZ44N FETs, continuous operation caused thermal buildup requiring active cooling. To minimize switching and conduction losses—ensuring they did not distort efficiency measurements—I switched to <strong>IRFP3205</strong> MOSFETs. Their extremely low on-resistance (Rds(on) = 8mΩ) limits conduction losses to under 1.6W at 10A (assuming moderate temperature), compared to 3.6W for IRFZ44N or 8W+ for IGBTs or BJTs.</p>
 
             <figure class="project-figure">
-                <img src="assets/BridgeFront.JPG" alt="Bridge Front View" class="project-img img-large">
+                <img src="assets/InductionHeating/BridgeFront.JPG" alt="Bridge Front View" class="project-img img-large">
                 <figcaption class="image-caption">Full H-bridge power stage utilizing IRFP3205 MOSFETs and individual RC snubbers</figcaption>
             </figure>
 
@@ -637,8 +637,8 @@ I settled on a <strong>Series Resonant Configuration</strong> rather than a para
 
             <figure class="project-figure">
                 <div class="image-pair-grid grid-compact">
-                    <img src="assets/ControlFront.jpg" alt="Control Board Front" class="project-img">
-                    <img src="assets/ControlBack.jpg" alt="Control Board Back" class="project-img">
+                    <img src="assets/InductionHeating/ControlFront.jpg" alt="Control Board Front" class="project-img">
+                    <img src="assets/InductionHeating/ControlBack.jpg" alt="Control Board Back" class="project-img">
                 </div>
                 <figcaption class="image-caption">Custom signal amplifier and gate driver board — front and back views</figcaption>
             </figure>
@@ -651,7 +651,7 @@ I settled on a <strong>Series Resonant Configuration</strong> rather than a para
             <p>The H-bridge and dual GDTs were housed compactly inside a 10 by 10 junction box, with the controller board securely mounted to the side. The prototype was designed for complete modularity: the LC tank components and work coil can be easily detached and distanced from the electronics. This was crucial since the work coil had to be placed inside a calorimeter while the electronics remained outside.</p>
 
             <figure class="project-figure">
-                <img src="assets/finish.png" alt="Finished Induction Heater Assembly" class="project-img img-compact">
+                <img src="assets/InductionHeating/finish.png" alt="Finished Induction Heater Assembly" class="project-img img-compact">
                 <figcaption class="image-caption">Assembled prototype housed in the junction box with modular connections</figcaption>
             </figure>
 
@@ -659,7 +659,7 @@ I settled on a <strong>Series Resonant Configuration</strong> rather than a para
             <p>To maximize the magnetic field at low supply currents, I used a high-inductance work coil (~140 µH, ~50 turns) wound with Litz wire salvaged from an induction stove. At high frequencies, AC current suffers from the skin effect, crowding near the outer conductor boundary. Litz wire's bundled, insulated strands force current to utilize the full copper cross-section, minimizing high-frequency resistance.</p>
 
             <figure class="project-figure">
-                <img src="assets/Coil.JPG" alt="Work Coils Comparison" class="project-img img-compact">
+                <img src="assets/InductionHeating/Coil.JPG" alt="Work Coils Comparison" class="project-img img-compact">
                 <figcaption class="image-caption">Litz wire work coil (~140 µH) on the right alongside a thick high-current prototype coil on the left</figcaption>
             </figure>
         </section>
@@ -671,14 +671,14 @@ I settled on a <strong>Series Resonant Configuration</strong> rather than a para
             <p>Operating frequency is manually dialed on the signal generator. Resonance can be identified by probing the bridge output and comparing it with tank current: at resonance, current peaks and is exactly in phase with the bridge voltage. Alternatively, a loose pickup wire placed near the work coil can detect the strong high-frequency E-field on an oscilloscope.</p>
 
             <figure class="project-figure">
-                <img src="assets/waveform.png" alt="Bridge Output and Tank Current Waveforms" class="project-img img-compact">
+                <img src="assets/InductionHeating/waveform.png" alt="Bridge Output and Tank Current Waveforms" class="project-img img-compact">
                 <figcaption class="image-caption">Bridge output voltage (yellow) and tank current (blue). The current lags slightly behind the voltage.</figcaption>
             </figure>
 
             <p>Manually tuning slightly above the resonant frequency forces an inductive mode that enables <strong>Zero-Voltage Switching (ZVS)</strong>, eliminating switching losses and maximizing efficiency.</p>
 
             <figure class="project-figure">
-                <img src="assets/lab1.png" alt="Calorimetry Setup" class="project-img img-large">
+                <img src="assets/InductionHeating/lab1.png" alt="Calorimetry Setup" class="project-img img-large">
                 <figcaption class="image-caption">Calorimetric test bench apparatus and calorimetry setup</figcaption>
             </figure>
 
@@ -689,7 +689,7 @@ I settled on a <strong>Series Resonant Configuration</strong> rather than a para
             <p>Electrical consumption was tracked by recording the power at regular intervals over the duration of the test run, plotting it over time P(t), and integrating it. To measure thermal energy accurately without heat loss to the environment or work coil, a specialized calorimeter setup was designed containing 400 ml of distilled water.</p>
 
 <figure class="project-figure">
-                <img src="assets/lab2.png" alt="Lab Testing and Data Collection" class="project-img img-large">
+                <img src="assets/InductionHeating/lab2.png" alt="Lab Testing and Data Collection" class="project-img img-large">
                 <figcaption class="image-caption">Lab testing and temperature data collection during calorimetric runs</figcaption>
             </figure>
 
@@ -719,7 +719,7 @@ I settled on a <strong>Series Resonant Configuration</strong> rather than a para
             <p>While the series resonant converter is ideal for controlled low-power testing, it presents challenges for high power: an empty work coil draws maximum current, risking bridge short circuits. Future designs will incorporate Over-Current Protection (OCP) and explore step-down transformers to impedance-match parallel resonant tanks.</p>
 
             <figure class="project-figure">
-                <img src="assets/schematic2.png" alt="High-Power Resonant Schematic Reference" class="project-img img-compact">
+                <img src="assets/InductionHeating/schematic2.png" alt="High-Power Resonant Schematic Reference" class="project-img img-compact">
                 <figcaption class="image-caption">Reference schematic for advanced parallel resonant architectures. Source: Herasymenko & Pavlovskyi (2021) / CC BY-SA 4.0</figcaption>
             </figure>
 
