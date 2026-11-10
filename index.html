@@ -241,16 +241,30 @@
         </header>
 
         <div class="projects-grid">
-            <div class="project-card" onclick="goToProject()">
+            <!-- Project 01 -->
+            <div class="project-card" onclick="goToProject(1)">
                 <div class="project-number">PROJECT 01</div>
-                <h2 class="project-title" id="proj-title">Medium Power Musical SSTC</h2>
-                <p class="project-description" id="proj-desc">A modular solid-state Tesla coil driven by a full H-bridge of MOSFETs with secondary antenna feedback and audio modulation capabilities.</p>
+                <h2 class="project-title" id="proj1-title">Medium Power Musical SSTC</h2>
+                <p class="project-description" id="proj1-desc">A modular solid-state Tesla coil driven by a full H-bridge of MOSFETs with secondary antenna feedback and audio modulation capabilities.</p>
                 <div class="tag-container">
                     <span class="tag tag-pwr">high-voltage</span>
                     <span class="tag tag-hw">switching converter</span>
                     <span class="tag tag-hw">resonant system</span>
                 </div>
-                <div class="cta" id="proj-cta">View Project</div>
+                <div class="cta" id="proj1-cta">View Project</div>
+            </div>
+
+            <!-- Project 02 -->
+            <div class="project-card" onclick="goToProject(2)">
+                <div class="project-number">PROJECT 02</div>
+                <h2 class="project-title" id="proj2-title">Induction Heater & Efficiency Bench</h2>
+                <p class="project-description" id="proj2-desc">A low-voltage, series-resonant induction heating prototype designed for rigorous calorimetric efficiency measurements.</p>
+                <div class="tag-container">
+                    <span class="tag tag-pwr">power electronics</span>
+                    <span class="tag tag-hw">resonant system</span>
+                    <span class="tag tag-rf">thermodynamics</span>
+                </div>
+                <div class="cta" id="proj2-cta">View Project</div>
             </div>
         </div>
 
@@ -266,17 +280,23 @@
             en: {
                 title: "Maker Portfolio",
                 subtitle: "A showcase of engineering projects, hardware prototyping and creative builds",
-                projTitle: "Medium Power Musical SSTC",
-                projDesc: "A modular solid-state Tesla coil driven by a full H-bridge of MOSFETs with secondary antenna feedback and audio modulation capabilities.",
-                projCta: "View Project",
+                proj1Title: "Medium Power Musical SSTC",
+                proj1Desc: "A modular solid-state Tesla coil driven by a full H-bridge of MOSFETs with secondary antenna feedback and audio modulation capabilities.",
+                proj1Cta: "View Project",
+                proj2Title: "Induction Heater & Efficiency Bench",
+                proj2Desc: "A low-voltage, series-resonant induction heating prototype designed for rigorous calorimetric efficiency measurements.",
+                proj2Cta: "View Project",
                 updatingText: "Page is still updating: more projects coming soon."
             },
             fr: {
                 title: "Maker Portfolio",
                 subtitle: "Une vitrine de projets d'ingénierie, de prototypage matériel et de réalisations créatives",
-                projTitle: "SSTC Musical de Moyenne Puissance",
-                projDesc: "Une bobine Tesla à semi-conducteurs modulaire pilotée par un pont en H complet de MOSFETs, dotée d'une rétroaction par antenne secondaire et de modulation audio.",
-                projCta: "Voir le projet",
+                proj1Title: "SSTC Musical de Moyenne Puissance",
+                proj1Desc: "Une bobine Tesla à semi-conducteurs modulaire pilotée par un pont en H complet de MOSFETs, dotée d'une rétroaction par antenne secondaire et de modulation audio.",
+                proj1Cta: "Voir le projet",
+                proj2Title: "Chauffage à Induction & Banc d'Efficacité",
+                proj2Desc: "Un prototype de chauffage à induction résonant série à basse tension conçu pour des mesures rigoureuses d'efficacité calorimétrique.",
+                proj2Cta: "Voir le projet",
                 updatingText: "Page en cours de mise à jour : d'autres projets arrivent bientôt."
             }
         };
@@ -290,9 +310,15 @@
 
             document.getElementById('main-title').textContent = translations[lang].title;
             document.getElementById('main-subtitle').textContent = translations[lang].subtitle;
-            document.getElementById('proj-title').textContent = translations[lang].projTitle;
-            document.getElementById('proj-desc').textContent = translations[lang].projDesc;
-            document.getElementById('proj-cta').textContent = translations[lang].projCta;
+            
+            document.getElementById('proj1-title').textContent = translations[lang].proj1Title;
+            document.getElementById('proj1-desc').textContent = translations[lang].proj1Desc;
+            document.getElementById('proj1-cta').textContent = translations[lang].proj1Cta;
+
+            document.getElementById('proj2-title').textContent = translations[lang].proj2Title;
+            document.getElementById('proj2-desc').textContent = translations[lang].proj2Desc;
+            document.getElementById('proj2-cta').textContent = translations[lang].proj2Cta;
+
             document.getElementById('updating-text').textContent = translations[lang].updatingText;
         }
 
@@ -307,11 +333,11 @@
             }
         });
 
-        function goToProject() {
-            if (currentLang === 'fr') {
-                window.location.href = 'project01fr.html';
-            } else {
-                window.location.href = 'project01eng.html';
+        function goToProject(projectNum) {
+            if (projectNum === 1) {
+                window.location.href = currentLang === 'fr' ? 'project01fr.html' : 'project01eng.html';
+            } else if (projectNum === 2) {
+                window.location.href = currentLang === 'fr' ? 'project02fr.html' : 'project02eng.html';
             }
         }
     </script>
