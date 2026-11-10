@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chauffage à Induction & Banc d'Efficacité</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+    /* Hide scrollbar for Firefox */
+    html {
+        scrollbar-width: none;
+    }
+
+    /* Hide scrollbar for Chrome, Safari and Edge */
+    html::-webkit-scrollbar {
+        display: none;
+    }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0f0f0f;
+            color: #d4d4d4;
+            line-height: 1.8;
+        }
+
+        /* --- Tag System Styles --- */
+        .tag-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .tag {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            border: 1px solid transparent;
+        }
+
+        .tag-hw { color: #f59e0b; border-color: rgba(245, 158, 11, 0.3); background: rgba(245, 158, 11, 0.05); }
+        .tag-sw { color: #3b82f6; border-color: rgba(59, 130, 246, 0.3); background: rgba(59, 130, 246, 0.05); }
+        .tag-pwr { color: #ef4444; border-color: rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.05); }
+        .tag-rf { color: #10b981; border-color: rgba(16, 185, 129, 0.3); background: rgba(16, 185, 129, 0.05); }
+        /* -------------------------- */
+
+        .navbar {
+            background: #0f0f0f;
+            padding: 30px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .back-button {
+            color: #888;
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: color 0.3s ease;
+        }
+
+        .back-button:hover {
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 80px 40px;
+            display: flex;
+            gap: 60px;
+        }
+
+        .sidebar {
+            width: 280px;
+            position: sticky;
+            top: 120px;
+            height: fit-content;
+            flex-shrink: 0;
+        }
+
+        .sidebar-nav {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 8px;
+        }
+
+        .sidebar-nav a {
+            display: block;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            padding: 8px 0;
+            transition: color 0.3s ease;
+            border-left: 2px solid transparent;
+            padding-left: 15px;
+        }
+
+        .sidebar-nav a:hover {
+            color: #fff;
+            border-left-color: #fff;
+        }
+
+        .sidebar-nav a.active {
+            color: #fff;
+            border-left-color: #fff;
+        }
+
+        .main-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .project-header {
+            margin-bottom: 80px;
+            border-bottom: 1px solid #1a1a1a;
+            padding-bottom: 60px;
+        }
+
+        .project-number {
+            font-size: 0.85rem;
+            color: #666;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 300;
+            color: #ffffff;
+            margin-bottom: 30px;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }
+
+        .lead {
+            font-size: 1.2rem;
+            color: #888;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+
+        .project-meta {
+            display: flex;
+            gap: 40px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .meta-label {
+            color: #888;
+            margin-bottom: 5px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .meta-value {
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        .section {
+            margin-bottom: 80px;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            font-weight: 400;
+            color: #ffffff;
+            margin-bottom: 30px;
+            letter-spacing: -0.01em;
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            font-weight: 400;
+            color: #fff;
+            margin-top: 40px;
+            margin-bottom: 20px;
+        }
+
+        p {
+            color: #888;
+            margin-bottom: 20px;
+        }
+
+        .warning-box {
+            background: #1a1111;
+            border-left: 3px solid #ef4444;
+            padding: 30px;
+            margin: 40px 0;
+        }
+
+        .warning-box h4 {
+            color: #ef4444;
+            margin-bottom: 15px;
+            font-size: 1rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .warning-box p {
+            color: #aaa;
+        }
+
+        .parts-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+        }
+
+        .parts-table th {
+            text-align: left;
+            padding: 15px 20px;
+            background: #1a1a1a;
+            color: #888;
+            font-weight: 500;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .parts-table td {
+            padding: 20px;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        .parts-table tr:hover {
+            background: #141414;
+        }
+
+        .part-name {
+            color: #fff;
+            font-weight: 400;
+            margin-bottom: 5px;
+        }
+
+        .part-specs {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .steps-list {
+            counter-reset: step;
+            list-style: none;
+        }
+
+        .steps-list li {
+            counter-increment: step;
+            margin-bottom: 50px;
+            position: relative;
+            padding-left: 80px;
+        }
+
+        .steps-list li::before {
+            content: counter(step, decimal-leading-zero);
+            position: absolute;
+            left: 0;
+            top: 0;
+            font-size: 1rem;
+            color: #666;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+        }
+
+        .step-title {
+            font-size: 1.2rem;
+            color: #fff;
+            margin-bottom: 15px;
+            font-weight: 400;
+        }
+
+        .step-content {
+            color: #888;
+            line-height: 1.8;
+        }
+
+        .tip {
+            background: #141414;
+            border-left: 3px solid #444;
+            padding: 20px 25px;
+            margin: 20px 0;
+            font-size: 0.95rem;
+        }
+
+        .tip-label {
+            color: #888;
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .resources-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2px;
+            background: #1a1a1a;
+            margin-top: 30px;
+        }
+
+        .resource-item {
+            background: #0f0f0f;
+            padding: 30px 25px;
+            transition: background 0.3s ease;
+        }
+
+        .resource-item:hover {
+            background: #141414;
+        }
+
+        .resource-item h4 {
+            color: #fff;
+            font-size: 1rem;
+            margin-bottom: 8px;
+            font-weight: 400;
+        }
+
+        .resource-item p {
+            color: #666;
+            font-size: 0.85rem;
+        }
+
+        .lang-switch {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #141414;
+            border: 1px solid #222;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+        }
+        .lang-btn {
+            color: #666;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+        .lang-btn:hover {
+            color: #bbb;
+        }
+        .lang-btn.active {
+            color: #fff;
+            font-weight: 600;
+        }
+        .lang-divider {
+            color: #333;
+        }
+
+        /* --- Image Gallery & Figure Styles --- */
+        .project-figure {
+            margin: 35px auto;
+        }
+
+        .project-img {
+            border-radius: 4px;
+            border: 1px solid #1a1a1a;
+            display: block;
+            object-fit: contain;
+        }
+
+        .hero-figure {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px auto 45px auto;
+        }
+
+        .hero-img {
+            max-width: 950px;
+            width: 100%;
+        }
+
+        .img-compact {
+            max-width: 560px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .img-large {
+            max-width: 850px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .grid-large {
+            max-width: 850px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .image-caption {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 10px;
+            text-align: center;
+            font-style: italic;
+        }
+
+        .image-pair-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .image-pair-grid .project-img {
+            width: 100%;
+            height: auto;
+        }
+
+        .grid-compact {
+            max-width: 650px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                position: static;
+                width: 100%;
+                border-bottom: 1px solid #1a1a1a;
+                padding-bottom: 30px;
+                margin-bottom: 40px;
+            }
+            
+            .sidebar-nav {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+            
+            .sidebar-nav a {
+                border-left: none;
+                border-bottom: 2px solid transparent;
+                padding-left: 0;
+                padding-bottom: 5px;
+            }
+            
+            .sidebar-nav a:hover,
+            .sidebar-nav a.active {
+                border-left-color: transparent;
+                border-bottom-color: #fff;
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            .container { padding: 60px 30px; }
+            .project-meta { flex-direction: column; gap: 20px; }
+            .steps-list li { padding-left: 60px; }
+            .image-pair-grid { grid-template-columns: 1fr; }
+            .hero-img, .img-compact, .grid-compact { max-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar">
+    <div class="nav-container">
+        <a href="index.html" class="back-button">← Retour aux Projets</a>
+        <div style="display: flex; align-items: center; gap: 20px;">
+            <div style="color: #666; font-size: 0.9rem;">PROJET 02</div>
+            <div class="lang-switch">
+                <a href="project02eng.html" class="lang-btn">EN</a>
+                <span class="lang-divider">|</span>
+                <span class="lang-btn active">FR</span>
+            </div>
+        </div>
+    </div>
+</nav>
+
+    <div class="container">
+        <aside class="sidebar">
+            <nav class="sidebar-nav">
+                <li><a href="#overview" class="active">Présentation</a></li>
+                <li><a href="#specs">Architecture & Spécifications</a></li>
+                <li><a href="#design-choices">Choix de Conception</a></li>
+                <li><a href="#layout">Disposition & Fabrication</a></li>
+                <li><a href="#results">Résultats & Protocole</a></li>
+                <li><a href="#limitations">Limitations</a></li>
+                <li><a href="#updates">Mises à jour & Suites</a></li>
+                <li><a href="#resources">Ressources</a></li>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+        <div class="project-header">
+            <div class="project-number">PROJET 02</div>
+
+            <div class="tag-container">
+                <span class="tag tag-pwr">électronique de puissance</span>
+                <span class="tag tag-hw">système résonant</span>
+                <span class="tag tag-rf">thermodynamique</span>
+            </div>
+
+            <h1>Chauffage à Induction & Banc d'Efficacité</h1>
+            <p class="lead">Un prototype de chauffage à induction résonant série à basse tension conçu pour des mesures rigoureuses d'efficacité calorimétrique, combinant théorie des ondes électromagnétiques et thermodynamique.</p>
+            <div class="project-meta">
+                <div>
+                    <div class="meta-label">Tension d'Alimentation</div>
+                    <div class="meta-value">0–30V DC</div>
+                </div>
+                <div>
+                    <div class="meta-label">Consommation</div>
+                    <div class="meta-value">~180W max</div>
+                </div>
+                <div>
+                    <div class="meta-label">Bobine de Travail</div>
+                    <div class="meta-value">~140 µH (Fil de Litz)</div>
+                </div>
+            </div>
+            <figcaption class="image-caption">La page est en cours de mise à jour : d'autres mesures, schémas et vidéos seront bientôt disponibles.</figcaption>
+        </div>
+
+        <figure class="hero-figure">
+            <img src="assets/Heating.jpg" alt="Chauffage à induction en fonctionnement" class="project-img hero-img">
+            <figcaption class="image-caption">Chauffage à induction en fonctionnement à 30V DC, ~180W, 53 kHz</figcaption>
+        </figure>
+
+        <section class="section" id="overview">
+            <h2>Présentation & Objectifs</h2>
+            <p>Avant d'entrer en école d'ingénieurs, j'ai effectué deux années de classes préparatoires (PCSI puis PC : Physique, Chimie, Mathématiques et Sciences de l'Ingénieur). À la fin de ces deux années, les étudiants doivent présenter leur TIPE (Travaux Initiatifs Personnels Encadrés) devant un jury — une présentation d'un projet de recherche scientifique ou technique personnel basé sur un thème national ("Transition, transformation, conversion" dans mon cas).</p>
+            
+            <p>Mon projet était axé sur les systèmes de chauffage à induction et les moyens de mesurer leur efficacité. Un chauffage à induction utilise l'électromagnétisme haute fréquence pour chauffer des matériaux conducteurs directement par courants de Foucault et pertes par hystérésis, sans aucun contact physique.</p>
+            
+            <p>L'un des objectifs principaux était de mesurer l'efficacité d'un systeme de chauffage à induction. J'ai donc conçu et construit un prototype, puis mesuré son rendement selon un protocole rigoureux. Ayant une bonne expérience des convertisseurs à découpage, la conception elle-même était relativement simple, ce qui m'a permis de me concentrer sur l'application pratique de différents chapitres de physique étudiés en prépa : théorie des ondes électromagnétiques, magnétostatique, circuits résonants et thermodynamique. C'était également l'occasion d'appliquer les acquis des travaux pratiques de chimie (bilan calorimétrique et élaboration de protocoles de mesure sur mesure).</p>
+
+            <p>Comme les expériences devaient se dérouler dans le laboratoire de l'école, je voulais créer un prototype compatible avec les alimentations de labo (30V 10A CC), ne me sentant pas à l'aise d'expérimenter sur le secteur en dehors de mon propre laboratoire.</p>
+            
+            <div class="warning-box">
+                <h4>Avertissement de Sécurité</h4>
+                <p>Les courants alternatifs haute fréquence et les fortes intensités traversant les bobines d'induction génèrent des champs magnétiques intenses capables de chauffer des objets métalliques instantanément. Bien que fonctionnant sous une tension limitée de 30V DC, une isolation thermique adéquate et des limites de courant sont indispensables pour éviter la destruction des composants.</p>
+            </div>
+        </section>
+
+        <section class="section" id="specs">
+            <h2>Architecture du Système & Spécifications</h2>
+            <table class="parts-table">
+                <thead>
+                    <tr>
+                        <th>Paramètre / Sous-système</th>
+                        <th>Spécifications & Détails</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><div class="part-name">Topologie de Fonctionnement</div></td>
+                        <td class="part-specs">Pont en H complet pilotant un circuit résonant LC Série</td>
+                    </tr>
+                    <tr>
+                        <td><div class="part-name">Transistors de Puissance</div></td>
+                        <td class="part-specs">4× MOSFETs N-Channel IRFP3205 (55V, 110A, TO-220)</td>
+                    </tr>
+                    <tr>
+                        <td><div class="part-name">Tension & Puissance</div></td>
+                        <td class="part-specs">Alimentation de laboratoire 0–30V DC ; testé jusqu'à ~180W</td>
+                    </tr>
+                    <tr>
+                        <td><div class="part-name">Plage de Fréquence</div></td>
+                        <td class="part-specs">30 kHz à 150 kHz (piloté manuellement par générateur de signaux)</td>
+                    </tr>
+                    <tr>
+                        <td><div class="part-name">Bobine d'Induction</div></td>
+                        <td class="part-specs">~50 tours de fil de Litz, inductance de ~140 µH</td>
+                    </tr>
+                    <tr>
+                        <td><div class="part-name">Découplage du Bus DC</div></td>
+                        <td class="part-specs">Condensateur film de 8 µF en parallèle à l'entrée du pont</td>
+                    </tr>
+                    <tr>
+                        <td><div class="part-name">Rendement Max Mesuré</div></td>
+                        <td class="part-specs">η = 66,9% (20V, 55W, fr = 111 kHz)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="section" id="design-choices">
+            <h2>Choix de Conception</h2>
+
+            <p>Pour générer le champ électromagnétique haute fréquence nécessaire au chauffage du métal, le courant continu doit être converti en courant alternatif haute fréquence puis injecté dans une bobine. Ces circuits utilisent presque toujours un circuit résonant LC pour maximiser le rendement, faciliter la commutation (ZCS et ZVS) et amplifier le courant.</p>
+
+            <figure class="project-figure">
+                <img src="assets/schematic1.png" alt="Schéma système du chauffage à induction" class="project-img img-large">
+                <figcaption class="image-caption">Schéma d'ensemble montrant l'étage de puissance en pont en H et la carte de commande</figcaption>
+            </figure>
+
+            <h3>1. Topologie Résonante : Série vs Parallèle</h3>
+            <p>Un convertisseur résonant parallèle est alimenté en courant et pilote un circuit LC parallèle à haute impédance, tandis qu'un convertisseur résonant série est alimenté en tension et pilote un circuit LC série à basse impédance.</p>
+            <p>Ce prototype a été conçu avec des contraintes précises (faible dissipation thermique, limite de 55V pour les MOSFETs). En raison de ces limitations, je me suis rapidement orienté vers la configuration série pour deux raisons principales :</p>
+            <ul>
+                <li><strong>Contrainte en Tension :</strong> Les montages parallèles produisent de violents pics de tension qui dépassent facilement 55V et détruisent les MOSFETs basse tension. La configuration série maintient la tension de commutation fermement verrouillée sur le rail d'alimentation DC.</li>
+                <li><strong>Échauffement Interne :</strong> Les circuits parallèles piègent d'immenses courants circulants au sein de la boucle LC, chauffant la bobine et les condensateurs (I²R). Les circuits série évitent cette boucle captive, réduisant considérablement l'échauffement des composants internes.</li>
+            </ul>
+
+            <h3>2. Étage de Puissance & Sélection des Composants</h3>
+            <p><strong>Choix des MOSFETs :</strong> Les premiers essais avec des IRFZ44N faisaient chauffer le pont en fonctionnement continu, nécessitant un ventilateur ou des dissipateurs plus imposants. Pour réduire au maximum les pertes par commutation et conduction (afin qu'elles n'interfèrent pas avec les mesures d'efficacité), je suis passé aux MOSFETs <strong>IRFP3205</strong>. Leur Rds(on) très faible (8 mΩ) limite les pertes par conduction à moins de 1,6W sous 10A (à température modérée), contre 3,6W pour les IRFZ44N ou plus de 8W pour des transistors IGBT ou BJT.</p>
+
+            <figure class="project-figure">
+                <img src="assets/BridgeFront.JPG" alt="Vue de face du pont en H" class="project-img img-large">
+                <figcaption class="image-caption">Étage de puissance en pont en H complet équipé de MOSFETs IRFP3205 et de réseaux snubber RC individuels</figcaption>
+            </figure>
+
+            <p><strong>Réseau Snubber & Capacité de Bus :</strong> Les nouveaux MOSFETs étant calibrés pour 55V avec une tension de service de 30V (laissant 25V de marge), il était indispensable d'utiliser de puissants réseaux amortisseurs (snubbers) pour absorber les pics de tension. J'ai placé un snubber RC individuel (condensateur 6,8 nF et résistance 15 Ω) aux bornes de chaque FET. Pour corriger l'affaissement de la tension du pont à la résonance causé par la résistance interne de l'alimentation, un condensateur film de 8 µF a été ajouté en parallèle à l'entrée du pont.</p>
+
+            <h3>3. Carte de Commande & Drivers de Grille</h3>
+            <p>Le pont est piloté par deux transformateurs d'impulsion (GDT 1:1:1) contrôlés par une carte amplificatrice sur mesure. Chaque étage amplificateur adapte le niveau 0–5V du générateur de signaux en 0–12V. Ce signal alimente deux amplificateurs push-pull (2N2222A et 2N2907A) qui pilotent le primaire du GDT (avec un condensateur de 1 µF en série pour bloquer la composante continu).</p>
+
+            <figure class="project-figure">
+                <div class="image-pair-grid grid-compact">
+                    <img src="assets/ControlFront.jpg" alt="Face avant carte de commande" class="project-img">
+                    <img src="assets/ControlBack.jpg" alt="Face arrière carte de commande" class="project-img">
+                </div>
+                <figcaption class="image-caption">Carte amplificatrice de signal et de commande de grille — vues avant et arrière</figcaption>
+            </figure>
+        </section>
+
+        <section class="section" id="layout">
+            <h2>Disposition & Fabrication</h2>
+
+            <h3>Circuit Principal & Modularité</h3>
+            <p>Le pont et les deux GDTs s'intègrent dans un boîtier de dérivation de 10 par 10 cm, la carte de commande étant fixée sur le côté. Le prototype a été conçu pour que le circuit LC soit facilement interchangeable et surtout que la bobine puisse être éloignée du circuit (nécessaire pour placer la bobine dans le calorimètre tout en laissant l'électronique à l'extérieur).</p>
+
+            <figure class="project-figure">
+                <img src="assets/finish.png" alt="Assemblage final du chauffage à induction" class="project-img img-compact">
+                <figcaption class="image-caption">Prototype assemblé dans son boîtier de dérivation avec connectique modulaire</figcaption>
+            </figure>
+
+            <h3>Bobine de Travail</h3>
+            <p>La configuration série étant limitée par le courant de l'alimentation, j'ai utilisé une bobine à forte inductance (~140 µH, ~50 tours) pour conserver un fort champ magnetique, elle est réalisée en fil de Litz récupéré d'une plaque à induction. Aux hautes fréquences, le courant alternatif subit l'effet de peau, ne circulant qu'à la surface du conducteur. Le fil de Litz, constitué de brins isolés tressés, force le courant à utiliser toute la section du cuivre, réduisant drastiquement la résistance HF.</p>
+
+            <figure class="project-figure">
+                <img src="assets/Coil.JPG" alt="Comparaison des bobines de travail" class="project-img img-compact">
+                <figcaption class="image-caption">Bobine en fil de Litz (~140 µH, à droite) aux côtés d'une bobine prototype forte intensité (à gauche)</figcaption>
+            </figure>
+        </section>
+
+        <section class="section" id="results">
+            <h2>Résultats & Protocole de Laboratoire</h2>
+
+            <h3>Réglage de Fréquence & Détection de Résonance</h3>
+            <p>Le circuit fonctionne à la fréquence réglée sur le générateur de signaux. Pour déterminer la fréquence de résonance exacte, on peut observer la sortie du pont et le courant du circuit résonant à l'oscilloscope : à la résonance, le courant est maximal et parfaitement en phase avec la tension du pont. Sans sonde de courant, la résonance se détecte facilement avec un fil flottant placé à proximité de la bobine : la forte tension HF génère un champ E intense capté par la sonde.</p>
+
+            <figure class="project-figure">
+                <img src="assets/waveform.png" alt="Formes d'ondes tension et courant" class="project-img img-compact">
+                <figcaption class="image-caption">Tension de sortie du pont (jaune) et courant LC (bleu). Le courant est légèrement en retard de phase par rapport à la tension.</figcaption>
+            </figure>
+
+            <p>Le réglage manuel permet d'accorder le système en mode légèrement inductif (fréquence légèrement supérieure à la résonance), forçant la commutation à tension nulle (<strong>ZVS</strong>) pour éliminer les pertes de commutation et maximiser le rendement.</p>
+
+            <figure class="project-figure">
+                <img src="assets/lab1.png" alt="Dispositif de calorimétrie" class="project-img img-large">
+                <figcaption class="image-caption">Banc d'essai et montage expérimental</figcaption>
+            </figure>
+
+            <h3>Protocole de Mesure d'Efficacité Calorimétrique</h3>
+            <p>Le rendement est défini comme le rapport entre l'énergie thermique transférée à la charge et la consommation électrique totale de l'appareil :</p>
+            <p>η = E_thermique / E_électrique</p>
+            
+            <p>La consommation électrique est mesurée en relevant la tension et l'intensité à intervalles réguliers au cours de l'expérience, en traçant la courbe de puissance P(t) et en l'intégrant sur la durée du test. Pour mesurer l'énergie thermique transférée sans perte vers l'atmosphère ou la bobine, un calorimètre contenant 400 ml d'eau distillée est utilisé.</p>
+
+            <figure class="project-figure">
+                <img src="assets/lab2.png" alt="Mesures et relevés en laboratoire" class="project-img img-large">
+                <figcaption class="image-caption">Tests en laboratoire et acquisition des données de température au cours des essais</figcaption>
+            </figure>
+
+            <p>L'eau joue deux rôles essentiels :</p>
+            <ol>
+                <li><strong>Capacité Thermique & Stabilité :</strong> L'ajout de 400g d'eau augmente la capacité thermique du système et permet de maintenir un profil de température plus stable (la température influençant la résistance de la charge et donc la puissance absorbée), tout en minimisant les fuites thermiques vers l'extérieur.</li>
+                <li><strong>Homogénéisation de la Température :</strong> Sans eau, les éléments (charge, bobine, parois) chauffent de manière très hétérogène. Avec de l'eau et une agitation douce, la chaleur est répartie uniformément, rendant la mesure de température représentative de l'ensemble du système.</li>
+            </ol>
+            <p>Plusieurs essais ont été menés avec différents matériaux de charge et différentes fréquences. Des mesures de détermination de capacité thermique ont permis d'évaluer la capacité thermique totale du système avec une charge en fer à 207,7 joule par kelvin.</p>
+        </section>
+
+        <section class="section" id="limitations">
+            <h2>Limitations</h2>
+            <p>Bien que le prototype ait permis de mesurer l'efficacité globale du système, plusieurs limitations sont apparues lors des essais :</p>
+            <ul>
+                <li><strong>Métaux Non-Ferromagnétiques :</strong> En l'absence de pertes par hystérésis, le circuit est peu efficace pour chauffer des métaux comme le laiton, l'aluminium ou le cuivre comparativement à l'acier ou au fer.</li>
+                <li><strong>Plafond de Température (Point de Curie) :</strong> Lors du chauffage d'un tournevis en fer jusqu'au rouge vif, le dépassement du point de Curie (~770°C) fait perdre au matériau ses propriétés ferromagnétiques. L'efficacité de chauffage a chuté, ne laissant que les courants de Foucault pour alimenter le processus, provoquant une hausse du courant absorbé tout en plafonnant la température. De plus, les températures élevées (>200°C) font fondre le support en plastique de la bobine par rayonnement.</li>
+                <li><strong>Accord Manuel :</strong> L'accord manuel de la fréquence via le générateur de signaux nécessite un réajustement constant au fur et à mesure que la charge chauffe et fait varier la résonance.</li>
+            </ul>
+        </section>
+
+        <section class="section" id="updates">
+            <h2>Mises à jour & Prochaines Étapes</h2>
+            <p>Ce projet s'est conclu avec la présentation des TIPE. Cependant, je prévois de construire un système de chauffage à induction plus puissant, capable de fondre du métal et de dépasser les limitations du premier prototype.</p>
+
+            <h3>Future Architecture Haute Puissance</h3>
+            <p>Le convertisseur résonant série présente un risque majeur à haute puissance : à vide (sans charge dans la bobine), le courant est maximal, ce qui risque de court-circuiter le pont. Les prochaines versions intégreront une protection contre les surintensités (OCP) et exploreront l'usage d'un transformateur d'adaptation d'impédance (Matching Transformer) avec le circuit résonant.</p>
+
+            <figure class="project-figure">
+                <img src="assets/schematic2.png" alt="Schéma de référence haute puissance" class="project-img img-compact">
+                <figcaption class="image-caption">Schéma de référence pour topologies résonantes série avancées. Source : Herasymenko & Pavlovskyi (2021) / CC BY-SA 4.0</figcaption>
+            </figure>
+
+            <p>De plus, un système de boucle à verrouillage de phase (PLL) ou d'accrochage sur le passage par zéro du courant (ZCD) sera implémenté pour suivre automatiquement la fréquence de résonance en temps réel.</p>
+        </section>
+
+        <section class="section" id="resources">
+            <h2>Ressources Complémentaires</h2>
+            <div class="resources-list">
+                <a href="https://doi.org/10.11591/ijpeds.v12.i1.pp258-272" target="_blank" rel="noopener noreferrer" class="resource-item" style="text-decoration: none;">
+                    <h4>Recherche Chauffage Induction</h4>
+                    <p>Herasymenko & Pavlovskyi (2021) - Analyse des topologies résonantes pour l'induction</p>
+                </a>
+                <a href="https://www.ti.com/document-viewer/lit/html/SSZTBC7" target="_blank" rel="noopener noreferrer" class="resource-item" style="text-decoration: none;">
+                    <h4>Design de Snubber RC (TI)</h4>
+                    <p>Guide d'application pour le calcul et le dimensionnement des snubbers RC</p>
+                </a>
+                <a href="https://teslascience.wordpress.com/simple-and-effective-induction-heater-current-control-circuit/" target="_blank" rel="noopener noreferrer" class="resource-item" style="text-decoration: none;">
+                    <h4>Contrôle de Chauffage Induction</h4>
+                    <p>Circuit de contrôle de courant pour les systèmes d'induction haute puissance</p>
+                </a>
+                <a href="https://thermtest.com/thermal-resources/build-your-own/specific-heat-test-method-of-mixture" target="_blank" rel="noopener noreferrer" class="resource-item" style="text-decoration: none;">
+                    <h4>Méthode des Mélanges</h4>
+                    <p>Protocole expérimental de détermination des capacités thermiques et calorimétrie</p>
+                </a>
+            </div>
+        </section>
+        </main>
+    </div>
+    <script>
+        // Smooth scroll for navigation
+        document.querySelectorAll('.sidebar-nav a').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+
+        // Update active state on scroll
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('.sidebar-nav a');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (scrollY >= (sectionTop - 150)) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
