@@ -543,7 +543,7 @@
         </div>
 
         <figure class="hero-figure">
-            <img src="assets/Heating.jpg" alt="Chauffage à induction en fonctionnement" class="project-img hero-img">
+            <img src="assets/InductionHeating/Heating.jpg" alt="Chauffage à induction en fonctionnement" class="project-img hero-img">
             <figcaption class="image-caption">Chauffage à induction en fonctionnement à 30V DC, ~180W, 53 kHz</figcaption>
         </figure>
 
@@ -611,7 +611,7 @@
             <p>Pour générer le champ électromagnétique haute fréquence nécessaire au chauffage du métal, le courant continu doit être converti en courant alternatif haute fréquence puis injecté dans une bobine. Ces circuits utilisent presque toujours un circuit résonant LC pour maximiser le rendement, faciliter la commutation (ZCS et ZVS) et amplifier le courant.</p>
 
             <figure class="project-figure">
-                <img src="assets/schematic1.png" alt="Schéma système du chauffage à induction" class="project-img img-large">
+                <img src="assets/InductionHeating/schematic1.png" alt="Schéma système du chauffage à induction" class="project-img img-large">
                 <figcaption class="image-caption">Schéma d'ensemble montrant l'étage de puissance en pont en H et la carte de commande</figcaption>
             </figure>
 
@@ -627,7 +627,7 @@
             <p><strong>Choix des MOSFETs :</strong> Les premiers essais avec des IRFZ44N faisaient chauffer le pont en fonctionnement continu, nécessitant un ventilateur ou des dissipateurs plus imposants. Pour réduire au maximum les pertes par commutation et conduction (afin qu'elles n'interfèrent pas avec les mesures d'efficacité), je suis passé aux MOSFETs <strong>IRFP3205</strong>. Leur Rds(on) très faible (8 mΩ) limite les pertes par conduction à moins de 1,6W sous 10A (à température modérée), contre 3,6W pour les IRFZ44N ou plus de 8W pour des transistors IGBT ou BJT.</p>
 
             <figure class="project-figure">
-                <img src="assets/BridgeFront.JPG" alt="Vue de face du pont en H" class="project-img img-large">
+                <img src="assets/InductionHeating/BridgeFront.JPG" alt="Vue de face du pont en H" class="project-img img-large">
                 <figcaption class="image-caption">Étage de puissance en pont en H complet équipé de MOSFETs IRFP3205 et de réseaux snubber RC individuels</figcaption>
             </figure>
 
@@ -638,8 +638,8 @@
 
             <figure class="project-figure">
                 <div class="image-pair-grid grid-compact">
-                    <img src="assets/ControlFront.jpg" alt="Face avant carte de commande" class="project-img">
-                    <img src="assets/ControlBack.jpg" alt="Face arrière carte de commande" class="project-img">
+                    <img src="assets/InductionHeating/ControlFront.jpg" alt="Face avant carte de commande" class="project-img">
+                    <img src="assets/InductionHeating/ControlBack.jpg" alt="Face arrière carte de commande" class="project-img">
                 </div>
                 <figcaption class="image-caption">Carte amplificatrice de signal et de commande de grille — vues avant et arrière</figcaption>
             </figure>
@@ -652,7 +652,7 @@
             <p>Le pont et les deux GDTs s'intègrent dans un boîtier de dérivation de 10 par 10 cm, la carte de commande étant fixée sur le côté. Le prototype a été conçu pour que le circuit LC soit facilement interchangeable et surtout que la bobine puisse être éloignée du circuit (nécessaire pour placer la bobine dans le calorimètre tout en laissant l'électronique à l'extérieur).</p>
 
             <figure class="project-figure">
-                <img src="assets/finish.png" alt="Assemblage final du chauffage à induction" class="project-img img-compact">
+                <img src="assets/InductionHeating/finish.png" alt="Assemblage final du chauffage à induction" class="project-img img-compact">
                 <figcaption class="image-caption">Prototype assemblé dans son boîtier de dérivation avec connectique modulaire</figcaption>
             </figure>
 
@@ -660,7 +660,7 @@
             <p>La configuration série étant limitée par le courant de l'alimentation, j'ai utilisé une bobine à forte inductance (~140 µH, ~50 tours) pour conserver un fort champ magnetique, elle est réalisée en fil de Litz récupéré d'une plaque à induction. Aux hautes fréquences, le courant alternatif subit l'effet de peau, ne circulant qu'à la surface du conducteur. Le fil de Litz, constitué de brins isolés tressés, force le courant à utiliser toute la section du cuivre, réduisant drastiquement la résistance HF.</p>
 
             <figure class="project-figure">
-                <img src="assets/Coil.JPG" alt="Comparaison des bobines de travail" class="project-img img-compact">
+                <img src="assets/InductionHeating/Coil.JPG" alt="Comparaison des bobines de travail" class="project-img img-compact">
                 <figcaption class="image-caption">Bobine en fil de Litz (~140 µH, à droite) aux côtés d'une bobine prototype forte intensité (à gauche)</figcaption>
             </figure>
         </section>
@@ -672,14 +672,14 @@
             <p>Le circuit fonctionne à la fréquence réglée sur le générateur de signaux. Pour déterminer la fréquence de résonance exacte, on peut observer la sortie du pont et le courant du circuit résonant à l'oscilloscope : à la résonance, le courant est maximal et parfaitement en phase avec la tension du pont. Sans sonde de courant, la résonance se détecte facilement avec un fil flottant placé à proximité de la bobine : la forte tension HF génère un champ E intense capté par la sonde.</p>
 
             <figure class="project-figure">
-                <img src="assets/waveform.png" alt="Formes d'ondes tension et courant" class="project-img img-compact">
+                <img src="assets/InductionHeating/waveform.png" alt="Formes d'ondes tension et courant" class="project-img img-compact">
                 <figcaption class="image-caption">Tension de sortie du pont (jaune) et courant LC (bleu). Le courant est légèrement en retard de phase par rapport à la tension.</figcaption>
             </figure>
 
             <p>Le réglage manuel permet d'accorder le système en mode légèrement inductif (fréquence légèrement supérieure à la résonance), forçant la commutation à tension nulle (<strong>ZVS</strong>) pour éliminer les pertes de commutation et maximiser le rendement.</p>
 
             <figure class="project-figure">
-                <img src="assets/lab1.png" alt="Dispositif de calorimétrie" class="project-img img-large">
+                <img src="assets/InductionHeating/lab1.png" alt="Dispositif de calorimétrie" class="project-img img-large">
                 <figcaption class="image-caption">Banc d'essai et montage expérimental</figcaption>
             </figure>
 
@@ -690,7 +690,7 @@
             <p>La consommation électrique est mesurée en relevant la tension et l'intensité à intervalles réguliers au cours de l'expérience, en traçant la courbe de puissance P(t) et en l'intégrant sur la durée du test. Pour mesurer l'énergie thermique transférée sans perte vers l'atmosphère ou la bobine, un calorimètre contenant 400 ml d'eau distillée est utilisé.</p>
 
             <figure class="project-figure">
-                <img src="assets/lab2.png" alt="Mesures et relevés en laboratoire" class="project-img img-large">
+                <img src="assets/InductionHeating/lab2.png" alt="Mesures et relevés en laboratoire" class="project-img img-large">
                 <figcaption class="image-caption">Tests en laboratoire et acquisition des données de température au cours des essais</figcaption>
             </figure>
 
@@ -720,7 +720,7 @@
             <p>Le convertisseur résonant série présente un risque majeur à haute puissance : à vide (sans charge dans la bobine), le courant est maximal, ce qui risque de court-circuiter le pont. Les prochaines versions intégreront une protection contre les surintensités (OCP) et exploreront l'usage d'un transformateur d'adaptation d'impédance (Matching Transformer) avec le circuit résonant.</p>
 
             <figure class="project-figure">
-                <img src="assets/schematic2.png" alt="Schéma de référence haute puissance" class="project-img img-compact">
+                <img src="assets/InductionHeating/schematic2.png" alt="Schéma de référence haute puissance" class="project-img img-compact">
                 <figcaption class="image-caption">Schéma de référence pour topologies résonantes série avancées. Source : Herasymenko & Pavlovskyi (2021) / CC BY-SA 4.0</figcaption>
             </figure>
 
